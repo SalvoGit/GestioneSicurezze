@@ -1,0 +1,671 @@
+﻿using Dapper;
+using GestioneSicurezze.Models;
+using Npgsql;
+using System.Configuration;
+using System.Data;
+
+namespace GestioneSicurezze
+{
+    public class DbOperation
+    {
+        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDb"].ConnectionString;
+        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
+        public static IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
+        public static string messageError = string.Empty;
+        public static string GetErrorMessage => messageError;
+        static IDbConnection connection;
+
+        public static bool TestConnection()
+        {
+            using var connection = CreateConnection();
+            try
+            {
+                connection.Open();
+                connection.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //throw new Exception("Database connection failed: " + ex.Message);
+                return false;
+            }
+        }
+        public static bool OpenConnection()
+        {
+            connection = CreateConnection();
+            try
+            {
+                connection.Open();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                messageError = $"Impossibile connettersi al database. Controllare la connessione di rete o contattare l'amministratore di sistema.\nErrore : {ex.Message}";
+                return false;
+            }
+        }
+        public static bool CloseConnection()
+        {
+            try
+            {
+                connection.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                messageError = $"Impossibile chiudere la connessione al Database.\nErrore : {ex.Message}";
+                return false;
+            }
+        }
+        public static int GetNextProgressivo()
+        {
+            //using var connection = CreateConnection();
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = "SELECT COALESCE(MAX(\"PROGRESSIVO\"), 0) + 1 FROM sicurezze.\"SicurRegistroSicurezze\"";
+                    }
+                    else
+                    {
+                        sqlCommand = "SELECT COALESCE(MAX(\"PROGRESSIVO\"), 0) + 1 FROM mezzapesa.\"SicurRegistroSicurezze\"";
+                    }
+
+                    int nextProgressivo = conn.ExecuteScalar<int>(sqlCommand);
+                    return nextProgressivo;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero del progressivo.\nErrore : {ex.Message}";
+                    return -1;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+        }
+        public static DBResult InsertSicurezzaDBNoProg(ModelloXray modelloXray)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                DBResult result = new();
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;                    
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                        INSERT INTO sicurezze."SicurRegistroSicurezze" ("NRENTRATA", "CODICEENAC", "AWB", "COLLI", "PESO", "DESTINAZIONE", 
+                        "CONTENUTO", "CLIENTE", "OPERATORE", "DATAESECUZIONE", "RIFERIMENTO", "TRASPORTATORE", "TARGA", "SIGILLONUMERO",
+                        "AUTISTA", "XRAY", "ETD", "PHS", "VCK", "STATOMERCE", "AEROPORTODEST","QT_XRAY","QT_ETD","QT_PHS","QT_VCK")
+                        VALUES (@NrEntrata, @CodiceEnac, @Awb, @Colli, @Peso, @Destinazione, @Contenuto, @Cliente, @Operatore, 
+                        @DataEsecuzione, @Riferimento, @Trasportatore, @Targa, @SigilloNumero, @Autista, @XRAY, @ETD, @PHS, @VCK, @STATOMERCE, @AeroportoDest,
+                        @QT_XRAY,@QT_ETD,@QT_PHS,@QT_VCK)
+                        RETURNING "ID","PROGRESSIVO";
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                        INSERT INTO mezzapesa."SicurRegistroSicurezze" ("NRENTRATA", "CODICEENAC", "AWB", "COLLI", "PESO", "DESTINAZIONE", 
+                        "CONTENUTO", "CLIENTE", "OPERATORE", "DATAESECUZIONE", "RIFERIMENTO", "TRASPORTATORE", "TARGA", "SIGILLONUMERO",
+                        "AUTISTA", "XRAY", "ETD", "PHS", "VCK", "STATOMERCE", "AEROPORTODEST","QT_XRAY","QT_ETD","QT_PHS","QT_VCK")
+                        VALUES (@NrEntrata, @CodiceEnac, @Awb, @Colli, @Peso, @Destinazione, @Contenuto, @Cliente, @Operatore, 
+                        @DataEsecuzione, @Riferimento, @Trasportatore, @Targa, @SigilloNumero, @Autista, @XRAY, @ETD, @PHS, @VCK, @STATOMERCE, @AeroportoDest,
+                        @QT_XRAY,@QT_ETD,@QT_PHS,@QT_VCK)
+                        RETURNING "ID","PROGRESSIVO";
+                    
+                    """;
+                    }
+                    
+                    return result = conn.QuerySingle<DBResult>(sqlCommand, modelloXray);                    
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante l'inserimento nel database.\nErrore : {ex.Message}";
+                    result.ID = -1;
+                    return result;
+                }
+            }
+
+        }
+        public static int InsertSicurezzaDB(ModelloXray modelloXray)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                        INSERT INTO sicurezze."SicurRegistroSicurezze" ("PROGRESSIVO", "NRENTRATA", "CODICEENAC", "AWB", "COLLI", "PESO", "DESTINAZIONE", 
+                        "CONTENUTO", "CLIENTE", "OPERATORE", "DATAESECUZIONE", "RIFERIMENTO", "TRASPORTATORE", "TARGA", "SIGILLONUMERO",
+                        "AUTISTA", "XRAY", "ETD", "PHS", "VCK", "STATOMERCE", "AEROPORTODEST","QT_XRAY","QT_ETD","QT_PHS","QT_VCK")
+                        VALUES (@Progressivo, @NrEntrata, @CodiceEnac, @Awb, @Colli, @Peso, @Destinazione, @Contenuto, @Cliente, @Operatore, 
+                        @DataEsecuzione, @Riferimento, @Trasportatore, @Targa, @SigilloNumero, @Autista, @XRAY, @ETD, @PHS, @VCK, @STATOMERCE, @AeroportoDest,
+                        @QT_XRAY,@QT_ETD,@QT_PHS,@QT_VCK)
+                        RETURNING "ID"
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                        INSERT INTO mezzapesa."SicurRegistroSicurezze" ("PROGRESSIVO", "NRENTRATA", "CODICEENAC", "AWB", "COLLI", "PESO", "DESTINAZIONE", 
+                        "CONTENUTO", "CLIENTE", "OPERATORE", "DATAESECUZIONE", "RIFERIMENTO", "TRASPORTATORE", "TARGA", "SIGILLONUMERO",
+                        "AUTISTA", "XRAY", "ETD", "PHS", "VCK", "STATOMERCE", "AEROPORTODEST","QT_XRAY","QT_ETD","QT_PHS","QT_VCK")
+                        VALUES (@Progressivo, @NrEntrata, @CodiceEnac, @Awb, @Colli, @Peso, @Destinazione, @Contenuto, @Cliente, @Operatore, 
+                        @DataEsecuzione, @Riferimento, @Trasportatore, @Targa, @SigilloNumero, @Autista, @XRAY, @ETD, @PHS, @VCK, @STATOMERCE, @AeroportoDest,
+                        @QT_XRAY,@QT_ETD,@QT_PHS,@QT_VCK)
+                        RETURNING "ID"
+                    
+                    """;
+                    }
+                    
+                    int idGenerato = conn.ExecuteScalar<int>(sqlCommand, modelloXray);
+                    return idGenerato;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante l'inserimento nel database.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
+                
+        }
+        public static DBResult InsertSicurezzaWithConflictDB(ModelloXray modelloXray)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                DBResult result = new();
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;                    
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                        INSERT INTO sicurezze."SicurRegistroSicurezze" ("PROGRESSIVO", "NRENTRATA", "CODICEENAC", "AWB", "COLLI", "PESO", "DESTINAZIONE", 
+                        "CONTENUTO", "CLIENTE", "OPERATORE", "DATAESECUZIONE", "RIFERIMENTO", "TRASPORTATORE", "TARGA", "SIGILLONUMERO",
+                        "AUTISTA", "XRAY", "ETD", "PHS", "VCK", "STATOMERCE", "AEROPORTODEST","QT_XRAY","QT_ETD","QT_PHS","QT_VCK")
+                        VALUES (@Progressivo, @NrEntrata, @CodiceEnac, @Awb, @Colli, @Peso, @Destinazione, @Contenuto, @Cliente, @Operatore, 
+                        @DataEsecuzione, @Riferimento, @Trasportatore, @Targa, @SigilloNumero, @Autista, @XRAY, @ETD, @PHS, @VCK, @STATOMERCE, @AeroportoDest,
+                        @QT_XRAY,@QT_ETD,@QT_PHS,@QT_VCK)
+                        ON CONFLICT ("PROGRESSIVO")                                            
+                        DO UPDATE SET
+                            "NRENTRATA"     = EXCLUDED."NRENTRATA",
+                            "CODICEENAC"    = EXCLUDED."CODICEENAC",
+                            "AWB"           = EXCLUDED."AWB",
+                            "COLLI"         = EXCLUDED."COLLI",
+                            "PESO"          = EXCLUDED."PESO",
+                            "DESTINAZIONE"  = EXCLUDED."DESTINAZIONE",
+                            "CONTENUTO"     = EXCLUDED."CONTENUTO",
+                            "CLIENTE"       = EXCLUDED."CLIENTE",
+                            "OPERATORE"     = EXCLUDED."OPERATORE",
+                            "DATAESECUZIONE"= EXCLUDED."DATAESECUZIONE",
+                            "RIFERIMENTO"   = EXCLUDED."RIFERIMENTO",
+                            "TRASPORTATORE" = EXCLUDED."TRASPORTATORE",
+                            "TARGA"         = EXCLUDED."TARGA",
+                            "SIGILLONUMERO" = EXCLUDED."SIGILLONUMERO",
+                            "AUTISTA"       = EXCLUDED."AUTISTA",
+                            "XRAY"          = EXCLUDED."XRAY",
+                            "ETD"           = EXCLUDED."ETD",
+                            "PHS"           = EXCLUDED."PHS",
+                            "VCK"           = EXCLUDED."VCK",
+                            "STATOMERCE"    = EXCLUDED."STATOMERCE",
+                            "AEROPORTODEST" = EXCLUDED."AEROPORTODEST",
+                            "QT_XRAY"       = EXCLUDED."QT_XRAY",
+                            "QT_ETD"        = EXCLUDED."QT_ETD",
+                            "QT_PHS"        = EXCLUDED."QT_PHS",
+                            "QT_VCK"        = EXCLUDED."QT_VCK"
+                        RETURNING "ID","PROGRESSIVO";
+                    
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                        INSERT INTO mezzapesa."SicurRegistroSicurezze" ("PROGRESSIVO", "NRENTRATA", "CODICEENAC", "AWB", "COLLI", "PESO", "DESTINAZIONE", 
+                        "CONTENUTO", "CLIENTE", "OPERATORE", "DATAESECUZIONE", "RIFERIMENTO", "TRASPORTATORE", "TARGA", "SIGILLONUMERO",
+                        "AUTISTA", "XRAY", "ETD", "PHS", "VCK", "STATOMERCE", "AEROPORTODEST","QT_XRAY","QT_ETD","QT_PHS","QT_VCK")
+                        VALUES (@Progressivo, @NrEntrata, @CodiceEnac, @Awb, @Colli, @Peso, @Destinazione, @Contenuto, @Cliente, @Operatore, 
+                        @DataEsecuzione, @Riferimento, @Trasportatore, @Targa, @SigilloNumero, @Autista, @XRAY, @ETD, @PHS, @VCK, @STATOMERCE, @AeroportoDest,
+                        @QT_XRAY,@QT_ETD,@QT_PHS,@QT_VCK)
+                        ON CONFLICT ("PROGRESSIVO")                                            
+                        DO UPDATE SET
+                            "NRENTRATA"     = EXCLUDED."NRENTRATA",
+                            "CODICEENAC"    = EXCLUDED."CODICEENAC",
+                            "AWB"           = EXCLUDED."AWB",
+                            "COLLI"         = EXCLUDED."COLLI",
+                            "PESO"          = EXCLUDED."PESO",
+                            "DESTINAZIONE"  = EXCLUDED."DESTINAZIONE",
+                            "CONTENUTO"     = EXCLUDED."CONTENUTO",
+                            "CLIENTE"       = EXCLUDED."CLIENTE",
+                            "OPERATORE"     = EXCLUDED."OPERATORE",
+                            "DATAESECUZIONE"= EXCLUDED."DATAESECUZIONE",
+                            "RIFERIMENTO"   = EXCLUDED."RIFERIMENTO",
+                            "TRASPORTATORE" = EXCLUDED."TRASPORTATORE",
+                            "TARGA"         = EXCLUDED."TARGA",
+                            "SIGILLONUMERO" = EXCLUDED."SIGILLONUMERO",
+                            "AUTISTA"       = EXCLUDED."AUTISTA",
+                            "XRAY"          = EXCLUDED."XRAY",
+                            "ETD"           = EXCLUDED."ETD",
+                            "PHS"           = EXCLUDED."PHS",
+                            "VCK"           = EXCLUDED."VCK",
+                            "STATOMERCE"    = EXCLUDED."STATOMERCE",
+                            "AEROPORTODEST" = EXCLUDED."AEROPORTODEST",
+                            "QT_XRAY"       = EXCLUDED."QT_XRAY",
+                            "QT_ETD"        = EXCLUDED."QT_ETD",
+                            "QT_PHS"        = EXCLUDED."QT_PHS",
+                            "QT_VCK"        = EXCLUDED."QT_VCK"
+                        RETURNING "ID","PROGRESSIVO";
+                    
+                    """;
+                    }
+
+                    result = conn.QuerySingle<DBResult>(sqlCommand, modelloXray);
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante l'inserimento nel database.\nErrore : {ex.Message}";
+                    result.ID = -1;                    
+                    return result;
+                }
+            }
+
+        }
+        public static int UpdateSicurezzaDB(ModelloXray modelloXray)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                        UPDATE sicurezze."SicurRegistroSicurezze" SET "PROGRESSIVO" = @Progressivo, "NRENTRATA" = @NrEntrata, "CODICEENAC" = @CodiceEnac, "AWB" = @Awb,
+                        "COLLI" = @Colli, "PESO" = @Peso, "DESTINAZIONE" = @Destinazione, "CONTENUTO" = @Contenuto, "CLIENTE" =@Cliente,
+                        "OPERATORE" = @Operatore, "DATAESECUZIONE" = @DataEsecuzione, "RIFERIMENTO" = @Riferimento, "TRASPORTATORE" = @Trasportatore,
+                        "TARGA" = @Targa, "SIGILLONUMERO" = @SigilloNumero, "AUTISTA" = @Autista, "XRAY" = @XRAY, "ETD" = @ETD, "PHS" = @PHS, "VCK" = @VCK,
+                        "STATOMERCE" = @STATOMERCE, "AEROPORTODEST" = @AeroportoDest,
+                        "QT_XRAY" = @QT_XRAY, "QT_ETD" = @QT_ETD, "QT_PHS" = @QT_PHS, "QT_VCK" = @QT_VCK
+                        WHERE "ID" = @ID
+                    
+                        """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                        UPDATE mezzapesa."SicurRegistroSicurezze" SET "PROGRESSIVO" = @Progressivo, "NRENTRATA" = @NrEntrata, "CODICEENAC" = @CodiceEnac, "AWB" = @Awb,
+                        "COLLI" = @Colli, "PESO" = @Peso, "DESTINAZIONE" = @Destinazione, "CONTENUTO" = @Contenuto, "CLIENTE" =@Cliente,
+                        "OPERATORE" = @Operatore, "DATAESECUZIONE" = @DataEsecuzione, "RIFERIMENTO" = @Riferimento, "TRASPORTATORE" = @Trasportatore,
+                        "TARGA" = @Targa, "SIGILLONUMERO" = @SigilloNumero, "AUTISTA" = @Autista, "XRAY" = @XRAY, "ETD" = @ETD, "PHS" = @PHS, "VCK" = @VCK,
+                        "STATOMERCE" = @STATOMERCE, "AEROPORTODEST" = @AeroportoDest,
+                        "QT_XRAY" = @QT_XRAY, "QT_ETD" = @QT_ETD, "QT_PHS" = @QT_PHS, "QT_VCK" = @QT_VCK
+                        WHERE "ID" = @ID
+                    
+                        """;
+                    }                    
+
+                    int righeAggiornate = conn.Execute(sqlCommand, modelloXray);
+                    return righeAggiornate;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante l'inserimento nel database.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
+        }
+        public static List<ModelloXray> SelectTop10(string operatore)
+        {
+            List<ModelloXray> lastinsert = new();
+            using(IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                        SELECT *
+                        FROM sicurezze."SicurRegistroSicurezze" 
+                        where "OPERATORE" = @Operatore order by "ID" desc
+                        limit 10
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                        SELECT *
+                        FROM mezzapesa."SicurRegistroSicurezze" 
+                        where "OPERATORE" = @Operatore order by "ID" desc
+                        limit 10
+                    
+                    """;
+                    }                    
+
+                    return conn.Query<ModelloXray>(sqlCommand, new { Operatore = operatore }).ToList();
+
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante l'inserimento nel database.\nErrore : {ex.Message}";
+                    return lastinsert;
+                }
+            }            
+        }
+        public static IReadOnlyList<CodiciEnac> CodiciEnac()
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                        SELECT * FROM sicurezze."SicurCodEnac" order by "Codice_EU" asc
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                        SELECT * FROM mezzapesa."SicurCodEnac" order by "Codice_EU" asc
+                    
+                    """;
+                    }
+                    return [.. conn.Query<CodiciEnac>(sqlCommand)];
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error retrieving Codici Enac: " + ex.Message);
+                }
+            }
+        }
+        public static IReadOnlyList<CodiciOperatori> CodiciOperatori()
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                        SELECT * FROM sicurezze."SicurCodOperatore" order by "CODICE_OPERATORE" asc
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                        SELECT * FROM mezzapesa."SicurCodOperatore" order by "CODICE_OPERATORE" asc
+                    
+                    """;
+                    }
+                    return [.. conn.Query<CodiciOperatori>(sqlCommand)];
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error retrieving Codici Operatore: " + ex.Message);
+                }
+            }
+        }
+        public static IReadOnlyList<SicurClienteCliente> NominativiClienti()
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = "SELECT * FROM sicurezze.\"SicurCliente\" order by \"Cliente\" asc";
+                    }
+                    else
+                    {
+                        sqlCommand = "SELECT * FROM mezzapesa.\"SicurCliente\" order by \"Cliente\" asc";
+                    }
+                    return [.. conn.Query<SicurClienteCliente>(sqlCommand)];
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error retrieving Nominativi Clienti: " + ex.Message);
+                }
+            }
+        }
+        public static int InsertNewOperator(CodiciOperatori codiceOperatore)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                    INSERT INTO sicurezze."SicurCodOperatore" ("CODICE_OPERATORE", "NOME_COGNOME", "SEDE")
+                    VALUES (@Codice_Operatore, @Nome_Cognome, @Sede)
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    INSERT INTO mezzapesa."SicurCodOperatore" ("CODICE_OPERATORE", "NOME_COGNOME", "SEDE")
+                    VALUES (@Codice_Operatore, @Nome_Cognome, @Sede)
+                    
+                    """;
+                    }
+                    
+                    int righeInserite = conn.ExecuteScalar<int>(sqlCommand, codiceOperatore);
+                    return righeInserite;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante l'inserimento del nuovo operatore nel database.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
+        }
+        public static bool OperatoreEsistente(int codiceOperatore)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if(_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurCodOperatore\" WHERE \"CODICE_OPERATORE\" = @Codice_Operatore";
+                    }
+                    else
+                    {
+                        sqlCommand = "SELECT COUNT(*) FROM mezzapesa.\"SicurCodOperatore\" WHERE \"CODICE_OPERATORE\" = @Codice_Operatore";
+                    }
+                    
+                    int count = conn.ExecuteScalar<int>(sqlCommand, new { Codice_Operatore = codiceOperatore });
+                    return count > 0;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante la verifica dell'esistenza dell'operatore.\nErrore : {ex.Message}";
+                    return false;
+                }
+            }
+        }
+        public static bool ClienteEsistente(string Cliente)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if(_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurCliente\" WHERE \"Cliente\" = @cliente";
+                    }
+                    else
+                    {
+                        sqlCommand = "SELECT COUNT(*) FROM mezzapesa.\"SicurCliente\" WHERE \"Cliente\" = @cliente";
+                    }
+                    
+                    int count = conn.ExecuteScalar<int>(sqlCommand, new { cliente = Cliente });
+                    return count > 0;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante la verifica dell'esistenza del Cliente.\nErrore : {ex.Message}";
+                    return false;
+                }
+            }
+        }
+        public static int InsertNewCliente(SicurClienteCliente sicurCliente)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                    INSERT INTO sicurezze."SicurCliente"("Cliente")
+                    VALUES (@Cliente)
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    INSERT INTO mezzapesa."SicurCliente"("Cliente")
+                    VALUES (@Cliente)
+                    
+                    """;
+                    }
+                    
+                    int righeInserite = conn.ExecuteScalar<int>(sqlCommand, sicurCliente);
+                    return righeInserite;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante l'inserimento del nuovo cliente nel database.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
+        }
+        public static int DeleteSicurezza(int ID)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = "DELETE FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID";
+                    }
+                    else
+                    {
+                        sqlCommand = "DELETE FROM mezzapesa.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID";
+                    }
+
+                    
+                    int righeCancellate = conn.Execute(sqlCommand, new { ID });
+                    return righeCancellate;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante la cancellazione della sicurezza.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
+        }
+        public static ModelloXray GetSicurezzaByAWB(string sicurezza)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    messageError = string.Empty;
+                    conn.Open();
+                    string sqlCommand;
+
+                    if (_connectionString.Contains("sicurezze"))
+                    {
+                        sqlCommand = """
+                    
+                    SELECT *
+                    FROM sicurezze."SicurRegistroSicurezze" 
+                    WHERE "AWB" = @sicurezza
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    SELECT *
+                    FROM mezzapesa."SicurRegistroSicurezze" 
+                    WHERE "AWB" = @sicurezza
+                    
+                    """;
+                    }
+                    
+                    return conn.QueryFirstOrDefault<ModelloXray>(sqlCommand, new { sicurezza });
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero della sicurezza.\nErrore : {ex.Message}";
+                    return null;
+                }
+            }
+
+        }
+    }
+}

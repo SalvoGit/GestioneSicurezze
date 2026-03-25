@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="GestioneSicurezze.MyUserControl.UC_SelezioneCombo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GestioneSicurezze.MyUserControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <!--#region Riga Progressivo CodiceEU Operatore Cliente-->
+    <Border Style="{StaticResource BorderStyle}"
+     Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <StackPanel Margin="5,0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Label Style="{DynamicResource LabelStyle}" Content="PROGRESSIVO:"></Label>
+                    <TextBlock Name="txtProgressivo" FontFamily="Verdana" FontSize="20" FontWeight="Bold"
+                        VerticalAlignment="Center"></TextBlock>
+                </StackPanel>
+                <Label Style="{StaticResource ErrorLabelStyle}" Padding="0,10"></Label>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Margin="10,0" VerticalAlignment="Center">
+                    <Label Style="{DynamicResource LabelStyle}" Content="CODICE EU:"></Label>
+                    <ComboBox x:Name="ComboEnac" FontFamily="Verdana"
+                FontSize="20" FontWeight="Bold" Width="230"
+                DisplayMemberPath="Codice_EU"
+                SelectedValuePath="Codice_EU" SelectedIndex="0">
+                    </ComboBox>
+                </StackPanel>
+                <Label x:Name="lblCodEU" Style="{StaticResource ErrorLabelStyle}" Padding="0,10"></Label>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="15,0">
+                    <Label Style="{DynamicResource LabelStyle}" Content="OPERATORE:"></Label>
+                    <ComboBox x:Name="ComboOperatori" SelectedIndex="0" FontFamily="Verdana"
+                FontSize="20" FontWeight="Bold" Width="75"
+                DisplayMemberPath="Codice_Operatore" SelectedValuePath="Codice_Operatore">
+                    </ComboBox>
+                </StackPanel>
+                <Label x:Name="lblOperatore" Style="{StaticResource ErrorLabelStyle}" Padding="0,10"></Label>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="15,0">
+                    <Label Style="{DynamicResource LabelStyle}" Content="SPEDIZIONE AFFIDATA DA:"></Label>
+                    <ComboBox x:Name="ComboCliente" SelectedIndex="0"
+            FontFamily="Verdana" FontSize="20"
+            FontWeight="Bold" Width="360"
+            IsEditable="True" Margin="15,0,0,0" DisplayMemberPath="Cliente" SelectedValuePath="Cliente">
+                    </ComboBox>
+                </StackPanel>
+                <Label x:Name="lblCliente" Style="{StaticResource ErrorLabelStyle}" Padding="0,10"></Label>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+    <!--#endregion-->
+</UserControl>
