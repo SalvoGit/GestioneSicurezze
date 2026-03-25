@@ -34,7 +34,7 @@ namespace GestioneSicurezze
             InitializeComponent();
             LoadSettings();            
             QuestPDF.Settings.License = LicenseType.Community;
-            lis_UltimiInseriti.ItemsSource = ultimiInserimenti;
+            lis_UltimiInseriti.ItemsSource = ultimiInserimenti;            
             /*********MODIFICA DEL 23/03/2026 PER LA GESTIONE DEL PROGRESSIVO IN CASO DI CONFLICT NEL DB*********/
             //txtProgressivo.Text = DbOperation.GetNextProgressivo().ToString();
             /****************************************************************************/
@@ -240,8 +240,10 @@ namespace GestioneSicurezze
                 {
                     using (var document = PdfDocument.Load(fileDaStampare))
                     {
-                        using (var printDocument = document.CreatePrintDocument())
+                        PdfPrintSettings settings = new PdfPrintSettings(PdfPrintMode.ShrinkToMargin);
+                        using (var printDocument = document.CreatePrintDocument(settings))
                         {
+                            
                             printDocument.PrinterSettings.PrinterName = printerName;
                             printDocument.PrinterSettings.Copies = (short)_userSettings.PrintCopy;
                             printDocument.PrinterSettings.Duplex = Duplex.Simplex;
@@ -350,6 +352,16 @@ namespace GestioneSicurezze
                 return;
             }
             ComboEnac.ItemsSource = _codiciEnac;
+            SetDefaultEnacCode();
+        }
+        private void SetDefaultEnacCode()
+        {
+            if (!string.IsNullOrEmpty(_userSettings.DefaultEnacCode))
+            {
+                ComboEnac.SelectedValue = _userSettings.DefaultEnacCode;
+                return;
+            }
+
             ComboEnac.SelectedIndex = 0;
         }
         private void AggiornaListaClienti(object sender, RoutedEventArgs e)
@@ -395,6 +407,7 @@ namespace GestioneSicurezze
             Settings settingsWindow = new Settings();
             settingsWindow.ShowDialog();
             LoadSettings();
+            SetDefaultEnacCode();
         }
 
         private void NuovoClienteButton_Click(object sender, RoutedEventArgs e)

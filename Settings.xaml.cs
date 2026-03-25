@@ -26,13 +26,24 @@ namespace GestioneSicurezze
             PrinterComboBox.SelectedItem = userSettings.UserPrinter;
             NumeroCopieTextBox.Text = userSettings.PrintCopy.ToString();
             txtSavePath.Text = userSettings.SavePath;
-            if(userSettings.PrintSecur)
+            if (userSettings.PrintSecur)
             {
                 rbPrintYes.IsChecked = true;
             }
             else
             {
                 rbPrintNo.IsChecked = true;
+            }
+
+            EnacCombobox.ItemsSource = UtilitySettings.GetEnacCodes().Select(p=>p.Codice_EU);
+
+            if (String.IsNullOrEmpty(userSettings.DefaultEnacCode))
+            {
+                EnacCombobox.SelectedIndex = 0;                
+            }
+            else
+            {
+                EnacCombobox.SelectedItem = userSettings.DefaultEnacCode;
             }
         }
 
@@ -58,9 +69,11 @@ namespace GestioneSicurezze
                 return;
             }
 
+            var selectedEnac = EnacCombobox.SelectedItem as string ?? string.Empty;
+
             bool printSecur = rbPrintYes.IsChecked == true;
 
-            string messaggio = UtilitySettings.SaveSettings(PrinterComboBox.SelectedItem as string ?? string.Empty, numeroCopie, txtSavePath.Text, printSecur);            
+            string messaggio = UtilitySettings.SaveSettings(PrinterComboBox.SelectedItem as string ?? string.Empty, numeroCopie, txtSavePath.Text, printSecur, selectedEnac);            
 
             MessageBox.Show(messaggio, "Settings", MessageBoxButton.OK, MessageBoxImage.Information);            
         }

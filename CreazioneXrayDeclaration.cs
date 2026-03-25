@@ -34,7 +34,7 @@ namespace GestioneSicurezze
             container
             .Page(page =>
             {
-                page.MarginHorizontal(1f, Unit.Centimetre);
+                page.MarginHorizontal(.5f, Unit.Centimetre);
                 page.MarginVertical(.5f, Unit.Centimetre);
                 page.Size(pageSize: PageSizes.A4);
 

@@ -17,7 +17,10 @@ namespace GestioneSicurezze
             var printers = printServer.GetPrintQueues(new[] { EnumeratedPrintQueueTypes.Local, EnumeratedPrintQueueTypes.Connections });
             return printers;            
         }
-
+        public static IReadOnlyList<CodiciEnac> GetEnacCodes()
+        {
+            return DbOperation.CodiciEnac();
+        }
         public static UserSettings ReadActualSettings()
         {
             string percorso = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), directorySettings, fileSettings);
@@ -32,10 +35,10 @@ namespace GestioneSicurezze
                 }                
             }
 
-            return new UserSettings { PrintCopy = 1, UserPrinter = String.Empty, SavePath = saveDirectory, PrintSecur = defaultPrintSecur }; 
+            return new UserSettings { PrintCopy = 1, UserPrinter = String.Empty, SavePath = saveDirectory, PrintSecur = defaultPrintSecur, DefaultEnacCode = String.Empty }; 
         }
 
-        public static string SaveSettings(string Printer, int Copies, string savePath, bool printSecur)
+        public static string SaveSettings(string Printer, int Copies, string savePath, bool printSecur, string defaultEnac)
         {
             try
             {
@@ -44,7 +47,8 @@ namespace GestioneSicurezze
                     UserPrinter = Printer,
                     PrintCopy = Copies,
                     SavePath = savePath,
-                    PrintSecur = printSecur
+                    PrintSecur = printSecur,
+                    DefaultEnacCode = defaultEnac
                 };
                 string jsonString = JsonSerializer.Serialize(userSettings, new JsonSerializerOptions { WriteIndented = true });
                 string percorso = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), directorySettings, fileSettings);

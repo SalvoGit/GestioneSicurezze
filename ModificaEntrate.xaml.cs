@@ -306,9 +306,11 @@ namespace GestioneSicurezze
                 string printerName = _userSettings.UserPrinter;
                 if (PrinterSettings.InstalledPrinters.Cast<string>().Contains(printerName))
                 {
+                    
                     using (var document = PdfDocument.Load(fileDaStampare))
                     {
-                        using (var printDocument = document.CreatePrintDocument())
+                        PdfPrintSettings settings = new PdfPrintSettings(PdfPrintMode.ShrinkToMargin);
+                        using (var printDocument = document.CreatePrintDocument(settings))
                         {
                             printDocument.PrinterSettings.PrinterName = printerName;
                             printDocument.PrinterSettings.Copies = (short)_userSettings.PrintCopy;
