@@ -198,11 +198,19 @@ namespace GestioneSicurezze
                         if (modelloXray.XRAY)
                         {
                             xray = "X";
+                            if(modelloXray.QT_XRAY != 0)
+                            {
+                                xray = "X/" + modelloXray.QT_XRAY.ToString();
+                            }
                         }
                         string etd = "";
                         if (modelloXray.ETD)
                         {
                             etd = "X";
+                            if(modelloXray.QT_ETD != 0)
+                            {
+                                etd = "X/" + modelloXray.QT_ETD.ToString();
+                            }
                         }
                         string phs = "";
                         if (modelloXray.PHS)

@@ -217,12 +217,12 @@
                         <CheckBox x:Name="chXray" Content="XRAY" FontFamily="Verdana" FontSize="14"
                                   Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"
                                   Margin="5,0" FontWeight="Bold" IsChecked="True"></CheckBox>
-                        <TextBox x:Name="txtQtXray" Grid.Column="1" Grid.Row="1" Margin="5,0"/>
+                        <TextBox x:Name="txtQtXray" Grid.Column="1" Grid.Row="1" Margin="5,0" FontFamily="Verdana" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
 
                         <CheckBox x:Name="chEtd" Content="ETD" FontFamily="Verdana" FontSize="14"
                                   Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"
                                   Margin="5,0" FontWeight="Bold"></CheckBox>
-                        <TextBox x:Name="txtQtEtd" Grid.Column="1" Grid.Row="2" Margin="5,0"/>
+                        <TextBox x:Name="txtQtEtd" Grid.Column="1" Grid.Row="2" Margin="5,0" FontFamily="Verdana" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
 
                         <CheckBox x:Name="chPhs" Content="PHS (Ispezione Manuale)" FontFamily="Verdana" FontSize="14"
                                   Grid.Column="0" Grid.Row="3" VerticalAlignment="Center"

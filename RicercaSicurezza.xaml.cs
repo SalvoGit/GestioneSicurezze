@@ -15,6 +15,7 @@ namespace GestioneSicurezze
         public RicercaSicurezza()
         {
             InitializeComponent();
+            LoadSettings();
             txtRicercaSicurezza.Focus();
         }
         private void LoadSettings()
@@ -66,9 +67,9 @@ namespace GestioneSicurezze
             txtSigilloNumero.Text = modelloXray.SigilloNumero;
             txtAutista.Text = modelloXray.Autista;
             txtXray.Text = modelloXray.XRAY ? "SI" : "NO";
-            txtQtXray.Text = modelloXray.QT_XRAY.ToString();
-            txtEtd.Text = modelloXray.QT_ETD.ToString();
+            txtQtXray.Text = modelloXray.QT_XRAY.ToString();            
             txtEtd.Text = modelloXray.ETD ? "SI" : "NO";
+            txtQtEtd.Text = modelloXray.QT_ETD.ToString();
             txtPhs.Text = modelloXray.PHS ? "SI" : "NO";
             txtVck.Text = modelloXray.VCK ? "SI" : "NO";
             if(modelloXray.STATOMERCE == "SPX")
@@ -86,8 +87,7 @@ namespace GestioneSicurezze
         private void RistampaButton_Click(object sender, RoutedEventArgs e)
         {
             try
-            {
-                LoadSettings();
+            {                
                 string nomeFile = $"{modelloXray.Progressivo}_{modelloXray.Cliente.Replace(" ", "_")}_{modelloXray.Awb}.pdf";
                 string percorsoFile = System.IO.Path.Combine(_userSettings.SavePath, nomeFile);
                 if (!System.IO.File.Exists(percorsoFile))

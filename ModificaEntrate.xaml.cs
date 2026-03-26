@@ -78,6 +78,16 @@ namespace GestioneSicurezze
                 return;
             }
             ComboEnac.ItemsSource = _codiciEnac;
+            SetDefaultEnacCode();
+        }
+        private void SetDefaultEnacCode()
+        {
+            if (!string.IsNullOrEmpty(_userSettings.DefaultEnacCode))
+            {
+                ComboEnac.SelectedValue = _userSettings.DefaultEnacCode;
+                return;
+            }
+
             ComboEnac.SelectedIndex = 0;
         }
 
@@ -119,7 +129,8 @@ namespace GestioneSicurezze
         private void UpdateCloseButton_Click(object sender, RoutedEventArgs e)
         {
             AggiornaDati();
-            AggiornaSicurezza();
+            SalvaNuovoPDF();
+            AggiornaSicurezza(); 
             ChiudiFinistra();
         }
 
@@ -185,26 +196,34 @@ namespace GestioneSicurezze
                 SalvaNuovoPDF();
                 AggiornaSicurezza();
             }
-            else
-            {
-                MessageBox.Show("Correggere gli errori prima di eseguire il salvataggio", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            //else
+            //{
+            //    MessageBox.Show("Correggere gli errori prima di eseguire il salvataggio", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
         }
 
         private void SalvaNuovoPDF()
         {
-            CreazioneXrayDeclaration creazioneXray = new CreazioneXrayDeclaration(modelloXray);
-            string nomeFile = $"{modelloXray.Progressivo}_{modelloXray.Cliente.Replace(" ", "_")}_{modelloXray.Awb}.pdf";
-            string filePath = Path.Combine(_userSettings.SavePath, nomeFile);
-
-            if (File.Exists(filePath))
+            try
             {
-                File.Delete(filePath);
+                CreazioneXrayDeclaration creazioneXray = new CreazioneXrayDeclaration(modelloXray);
+                string nomeFile = $"{modelloXray.Progressivo}_{modelloXray.Cliente.Replace(" ", "_")}_{modelloXray.Awb}.pdf";
+                string filePath = Path.Combine(_userSettings.SavePath, nomeFile);
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                creazioneXray.GeneratePdf(Path.Combine(_userSettings.SavePath, nomeFile));
+
+                StampaFile(filePath);
             }
-
-            creazioneXray.GeneratePdf(Path.Combine(_userSettings.SavePath, nomeFile));
-
-            StampaFile(filePath);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante la generazione del PDF: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }            
         }
 
         private void AggiornaSicurezza()
@@ -280,6 +299,25 @@ namespace GestioneSicurezze
                 MessageBox.Show("Prima di poter effettuare il salvataggio è necessario correggere gli errori evidenziati", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Stop);
                 return false;
+            }
+
+            if (modelloXray.XRAY && modelloXray.ETD)
+            {
+                int colliTotali = int.TryParse(modelloXray.Colli, out int colli) ? colli : 0;
+
+                if ((modelloXray.QT_XRAY == 0) && (modelloXray.QT_ETD == 0))
+                {
+                    MessageBox.Show("INSERIRE QUANTITA' PER XRAY O ETD", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Stop);
+                    return false;
+                }
+
+                if ((modelloXray.QT_XRAY + modelloXray.QT_ETD) != colliTotali)
+                {
+                    MessageBox.Show("SOMMA QUANTITA' XRAY + QUANTITA' ETD DIVERSA DALLA QUANTITA' DI COLLI TOTALI", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Stop);
+                    return false;
+                }
             }
 
             return true;

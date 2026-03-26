@@ -20,7 +20,7 @@
         public string SigilloNumero { get; set; } = String.Empty;
         public string Autista { get; set; } = String.Empty;
         public bool XRAY { get; set; } = true;
-        public int QT_XRAY { get; set; } = 1;
+        public int QT_XRAY { get; set; } = 0;
         public bool ETD { get; set; } = false;
         public int QT_ETD { get; set; } = 0;
         public bool PHS { get; set; } = false;

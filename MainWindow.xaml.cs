@@ -3,12 +3,8 @@ using PdfiumViewer;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
 using System.IO;
-using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -169,7 +165,21 @@ namespace GestioneSicurezze
         }
         private void OnlyNumbers(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
-            e.Handled = !e.Text.All(char.IsDigit);
+            //accetto solo numeri
+            if (char.IsDigit(e.Text, 0))
+            {
+                return;
+            }
+
+            //acetto anche la virgola
+            TextBox textBox = sender as TextBox;
+            if(e.Text == "," && !textBox.Text.Contains(","))
+            {
+                return;
+            }
+
+            e.Handled = true;
+            //e.Handled = !e.Text.All(char.IsDigit);
         }
         private void CaricaUltimi10(string operatore)
         {
@@ -211,7 +221,7 @@ namespace GestioneSicurezze
             /****************************************************************************/
             ClearErrorMessages();
             txtQtEtd.Text = "0";
-            txtQtXray.Text = "1";
+            txtQtXray.Text = "0";
             txtAwb.Focus();
         }
         private int SalvaSicurezza(ModelloXray modelloXray)
@@ -329,7 +339,26 @@ namespace GestioneSicurezze
                     MessageBoxButton.OK,MessageBoxImage.Stop);
                 return false;
             }
-            
+
+            if(modelloXray.XRAY && modelloXray.ETD)
+            {
+                int colliTotali = int.TryParse(modelloXray.Colli, out int colli) ? colli : 0;
+
+                if((modelloXray.QT_XRAY == 0) && (modelloXray.QT_ETD == 0))
+                {
+                    MessageBox.Show("INSERIRE QUANTITA' PER XRAY O ETD", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Stop);
+                    return false;
+                }
+
+                if ((modelloXray.QT_XRAY + modelloXray.QT_ETD) != colliTotali)
+                {
+                    MessageBox.Show("SOMMA QUANTITA' XRAY + QUANTITA' ETD DIVERSA DALLA QUANTITA' DI COLLI TOTALI", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Stop);
+                    return false;
+                }
+            }            
+
             return true;
         }
         private void AggiornaListaEnac(object sender, RoutedEventArgs e)
