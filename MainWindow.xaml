@@ -70,7 +70,7 @@
                     
                     <!--#region CODICE ENAC-->
                     <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Margin="5,0,5,10" VerticalAlignment="Center">
                             <Label Style="{DynamicResource LabelStyle}" Content="CODICE EU:"></Label>
                             <ComboBox x:Name="ComboEnac" FontFamily="Verdana"
                                       FontSize="20" FontWeight="Bold" Width="230"
@@ -82,13 +82,13 @@
                                 <Image Source="/Immagini/refresh.png"></Image>
                             </Button>
                         </StackPanel>
-                        <Label x:Name="lblCodEU" Style="{StaticResource ErrorLabelStyle}" Padding="5"></Label>
+                        <Label x:Name="lblCodEU" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="5" Margin="0,5,0,0"></Label>
                     </StackPanel>
                     <!--#endregion-->
 
                     <!--#region OPERATORE-->
                     <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal" Margin="5,0">
+                        <StackPanel Orientation="Horizontal" Margin="5,0,5,10">
                             <Label Style="{DynamicResource LabelStyle}" Content="OPERATORE:"></Label>
                             <ComboBox x:Name="ComboOperatori" SelectedIndex="0" FontFamily="Verdana"
                                       FontSize="20" FontWeight="Bold" Width="75"
@@ -99,13 +99,13 @@
                                 <Image Source="/Immagini/refresh.png"></Image>
                             </Button>
                         </StackPanel>
-                        <Label x:Name="lblOperatore" Style="{StaticResource ErrorLabelStyle}" Padding="5"></Label>
+                        <Label x:Name="lblOperatore" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="5" Margin="0,5,0,0"></Label>
                     </StackPanel>
                     <!--#endregion-->
                     
                     <!--#region CLIENTE-->
                     <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal" Margin="5,0">
+                        <StackPanel Orientation="Horizontal" Margin="5,0,5,10">
                             <Label Style="{DynamicResource LabelStyle}" Content="SPEDIZIONE AFFIDATA DA:"></Label>
                             <ComboBox x:Name="ComboCliente" SelectedIndex="0"
                                   FontFamily="Verdana" FontSize="20"
@@ -118,7 +118,7 @@
                                 <Image Source="/Immagini/refresh.png"></Image>
                             </Button>
                         </StackPanel>
-                        <Label x:Name="lblCliente" Style="{StaticResource ErrorLabelStyle}" Padding="5"></Label>
+                        <Label x:Name="lblCliente" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="5" Margin="0,5,0,0"></Label>
                     </StackPanel>
                     <!--#endregion-->
                 </StackPanel>
@@ -134,7 +134,7 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="200"></ColumnDefinition>
-                                <ColumnDefinition Width="200"></ColumnDefinition>
+                                <ColumnDefinition Width="300"></ColumnDefinition>
                                 <ColumnDefinition Width="250"></ColumnDefinition>
                                 <ColumnDefinition Width="200"></ColumnDefinition>
                                 <ColumnDefinition Width="250"></ColumnDefinition>
