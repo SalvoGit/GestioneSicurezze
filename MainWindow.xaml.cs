@@ -453,13 +453,40 @@ namespace GestioneSicurezze
             CaricaUltimi10(elemento.Operatore);
         }
         private void Delete_Click(object sender, RoutedEventArgs e)
-        {
-            var elemento = (sender as Button).Tag as ModelloXray;          
-            int righeCancellate = DbOperation.DeleteSicurezza(elemento.ID);
-            MessageBox.Show(righeCancellate > 0 ? "Sicurezza cancellata correttamente." : $"Errore durante la cancellazione della sicurezza.\n{DbOperation.GetErrorMessage}");
-            //ultimiInserimenti.Remove(elemento);
-            CaricaUltimi10(elemento.Operatore);
+        {            
+            try
+            {
+                var elemento = (sender as Button).Tag as ModelloXray;
+                int righeCancellate = DbOperation.DeleteSicurezza(elemento.ID);
+                DeletePDF(elemento);
+                MessageBox.Show(righeCancellate > 0 ? "Sicurezza cancellata correttamente." : $"Errore durante la cancellazione della sicurezza.\n{DbOperation.GetErrorMessage}",
+                    "Success",MessageBoxButton.OK,MessageBoxImage.Information);
+                //ultimiInserimenti.Remove(elemento);
+                CaricaUltimi10(elemento.Operatore);
+            }
+            catch (Exception ex) { }
+            
         }
+
+        private void DeletePDF(ModelloXray elemento)
+        {
+            string nomeFile = $"{elemento.Progressivo}_{elemento.Cliente.Replace(" ", "_")}_{elemento.Awb}.pdf";
+            string filePath = Path.Combine(_userSettings.SavePath, nomeFile);
+
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante la cancellazione del file PDF {nomeFile}: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             RicercaSicurezza ricercaWindow = new RicercaSicurezza();
