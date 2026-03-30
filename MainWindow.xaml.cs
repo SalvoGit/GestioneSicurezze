@@ -454,7 +454,7 @@ namespace GestioneSicurezze
         }
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var elemento = (sender as Button).Tag as ModelloXray;
+            var elemento = (sender as Button).Tag as ModelloXray;          
             int righeCancellate = DbOperation.DeleteSicurezza(elemento.ID);
             MessageBox.Show(righeCancellate > 0 ? "Sicurezza cancellata correttamente." : $"Errore durante la cancellazione della sicurezza.\n{DbOperation.GetErrorMessage}");
             //ultimiInserimenti.Remove(elemento);
