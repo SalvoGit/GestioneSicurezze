@@ -15,7 +15,12 @@ namespace GestioneSicurezze
                 .Must(value => int.TryParse(value, out _))
                 .WithMessage("COLLI obbligatorio e numerico").WithSeverity(Severity.Error);
             RuleFor(x => x.Peso).NotEmpty().WithMessage("PESO obbligatorio").WithSeverity(Severity.Error);
-            RuleFor(x => x.Destinazione).NotEmpty().WithMessage("DESTINAZIONE obbligatoria").WithSeverity(Severity.Error);
+            RuleFor(x => x.Destinazione)
+                .NotEmpty()
+                .Length(3)
+                .WithMessage("DESTINAZIONE lunghezza max 3 caratteri")
+                .Must(value=> value.All(char.IsLetter))
+                .WithMessage("DESTINAZIONE deve essere solo lettere").WithSeverity(Severity.Error);
             RuleFor(x => x.Contenuto).NotEmpty().WithMessage("CONTENUTO obbligatorio").WithSeverity(Severity.Error);
             RuleFor(x => x.Cliente).NotEmpty().WithMessage("CLIENTE obbligatorio").WithSeverity(Severity.Error);
             RuleFor(x => x.Operatore).NotEmpty().WithMessage("OPERATORE obbligatorio").WithSeverity(Severity.Error);
