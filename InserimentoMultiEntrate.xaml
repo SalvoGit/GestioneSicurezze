@@ -1,0 +1,60 @@
+﻿<Window x:Class="GestioneSicurezze.InserimentoMultiEntrate"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GestioneSicurezze"
+        mc:Ignorable="d"
+        Title="Mezzapesa - Gestione Sicurezze - Multi Entrate" Background="#F7F8E2"
+        WindowStartupLocation="CenterScreen" Height="450" Width="800">
+    
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
+            <Border Style="{StaticResource BorderStyle}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
+                <Label Style="{DynamicResource LabelStyle}" Content="Inserimento Multi Entrate" HorizontalContentAlignment="Center" FontStyle="Oblique"></Label>
+            </Border>
+            <Border Style="{StaticResource BorderStyle}" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label Style="{DynamicResource LabelStyle}" Content="Nr Entrata:"></Label>
+                    <TextBox x:Name="txtEntrata" FontFamily="Verdana" FontSize="16" Padding="5" 
+                     VerticalContentAlignment="Center" Width="250" PreviewKeyDown="txtEntrata_PreviewKeyDown"
+                     Margin="5" HorizontalContentAlignment="Center" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource BorderStyle}" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2">
+                
+                
+                    <ListView x:Name="lis_multiEntrate" FontSize="16" Margin="5">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="PROG." Width="50" DisplayMemberBinding="{Binding Progressivo}"></GridViewColumn>
+                                <GridViewColumn Header="ENTR. NR." Width="125" DisplayMemberBinding="{Binding NrEntrata}"></GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                
+            
+            </Border>
+            <Border Style="{StaticResource BorderStyle}" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="2">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="SaveButton" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5" Click="SaveButton_Click">Salva</Button>
+                </StackPanel>
+            </Border>
+        </Grid>    
+</Window>

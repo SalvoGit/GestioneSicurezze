@@ -1,0 +1,1 @@
+Sto per richiedere il file XAML del tab attivo. L'utente vuole analizzare perché la ListView non fa scrolling. Richiedo il contenuto del file XAML del tab attivo (probabilmente parte di MainWindow.xaml o di una UserControl).

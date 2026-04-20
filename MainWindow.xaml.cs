@@ -34,7 +34,8 @@ namespace GestioneSicurezze
             /*********MODIFICA DEL 23/03/2026 PER LA GESTIONE DEL PROGRESSIVO IN CASO DI CONFLICT NEL DB*********/
             //txtProgressivo.Text = DbOperation.GetNextProgressivo().ToString();
             /****************************************************************************/
-            txtAwb.Focus();
+            txtEntrata.Focus();
+            //txtAwb.Focus();
             //var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             //var resource = assembly.GetManifestResourceNames();
             //foreach (var item in resource)
@@ -491,6 +492,24 @@ namespace GestioneSicurezze
         {
             RicercaSicurezza ricercaWindow = new RicercaSicurezza();
             ricercaWindow.ShowDialog();
+        }
+
+        private void btnAddEntrata_Click(object sender, RoutedEventArgs e)
+        {
+            //ObservableCollection<MultiEntrate> multiEntrateList = new ObservableCollection<MultiEntrate>();
+            //MultiEntrate multi = new MultiEntrate();
+            InserimentoMultiEntrate inserimentoMultiWindow = new InserimentoMultiEntrate();
+            if (inserimentoMultiWindow.ShowDialog() == true)
+            {
+                var lista = inserimentoMultiWindow.EntrateMultiple;
+                if (lista != null && lista.Count > 0)
+                {
+                    foreach (var item in lista)
+                    {
+                        txtEntrata.Text = txtEntrata.Text + item.NrEntrata + ";";
+                    }
+                }
+            }
         }
     }
 }
