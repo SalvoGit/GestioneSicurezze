@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace GestioneSicurezze
@@ -134,6 +135,29 @@ namespace GestioneSicurezze
             ChiudiFinistra();
         }
 
+        private void OnlyNumbers(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            //accetto solo numeri
+            if (char.IsDigit(e.Text, 0))
+            {
+                return;
+            }
+
+            //acetto anche la virgola
+            TextBox textBox = sender as TextBox;
+            if (e.Text == "," && !textBox.Text.Contains(","))
+            {
+                return;
+            }
+
+            if (e.Text == "." && !textBox.Text.Contains("."))
+            {
+                return;
+            }
+
+            e.Handled = true;
+            //e.Handled = !e.Text.All(char.IsDigit);
+        }
         private bool AggiornaDati()
         {            
             modelloXray.ID = _modelloXray.ID;
@@ -144,7 +168,16 @@ namespace GestioneSicurezze
             modelloXray.Cliente = ComboCliente.SelectedValue?.ToString() ?? string.Empty;
             modelloXray.Awb = txtAwb.Text.ToUpper();
             modelloXray.Colli = txtColli.Text.ToUpper();
-            modelloXray.Peso = txtPeso.Text.ToUpper();
+
+            if(txtPeso.Text.Contains("."))
+            {
+                modelloXray.Peso = txtPeso.Text.Replace(".", ",").ToUpper();
+            }
+            else
+            {
+                modelloXray.Peso = txtPeso.Text.ToUpper();
+            }
+            
             modelloXray.Destinazione = txtDestinazione.Text.ToUpper();
             modelloXray.Contenuto = txtContenuto.Text.ToUpper();
             modelloXray.Riferimento = txtRiferimento.Text.ToUpper() ?? string.Empty;

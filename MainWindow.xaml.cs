@@ -57,7 +57,17 @@ namespace GestioneSicurezze
             modelloXray.Cliente = ComboCliente.SelectedValue?.ToString() ?? string.Empty;
             modelloXray.Awb = txtAwb.Text.ToUpper();
             modelloXray.Colli = txtColli.Text.ToUpper();
-            modelloXray.Peso = txtPeso.Text.ToUpper();
+
+            if (txtPeso.Text.Contains(".")) 
+            {
+                modelloXray.Peso = txtPeso.Text.Replace(".", ",").ToUpper();
+            }
+            else
+            {
+                modelloXray.Peso = txtPeso.Text.ToUpper();
+            }
+
+             
             modelloXray.Destinazione = txtDestinazione.Text.ToUpper();
             modelloXray.Contenuto = txtContenuto.Text.ToUpper();
             modelloXray.Riferimento = txtRiferimento.Text.ToUpper() ?? string.Empty;
@@ -179,6 +189,11 @@ namespace GestioneSicurezze
                 return;
             }
 
+            if (e.Text == "." && !textBox.Text.Contains("."))
+            {
+                return;
+            }
+
             e.Handled = true;
             //e.Handled = !e.Text.All(char.IsDigit);
         }
@@ -223,7 +238,8 @@ namespace GestioneSicurezze
             ClearErrorMessages();
             txtQtEtd.Text = "0";
             txtQtXray.Text = "0";
-            txtAwb.Focus();
+            //txtAwb.Focus();
+            txtEntrata.Focus();
         }
         private int SalvaSicurezza(ModelloXray modelloXray)
         {

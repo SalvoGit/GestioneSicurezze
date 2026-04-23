@@ -157,7 +157,8 @@
                                     <StackPanel Orientation="Horizontal">
                                         <TextBox x:Name="txtEntrata" FontFamily="Verdana" FontSize="16" Padding="5" Margin="5" HorizontalContentAlignment="Center" 
                                                  VerticalContentAlignment="Center" Width="255"></TextBox>
-                                        <Button x:Name="btnAddEntrata" Content="+" Margin="5,5,0,5" Width="25" Style="{DynamicResource ButtonStyle}" ToolTip="Aggiungi Entrate Multiple" Click="btnAddEntrata_Click"></Button>
+                                        <Button x:Name="btnAddEntrata" Content="+" Margin="5,5,0,5" Width="25" Visibility="Hidden"
+                                                Style="{DynamicResource ButtonStyle}" ToolTip="Aggiungi Entrate Multiple" Click="btnAddEntrata_Click"></Button>
                                     </StackPanel>
                                     
                                     <Label x:Name="lblEntrata" Style="{StaticResource ErrorLabelStyle}" Padding="5"></Label>

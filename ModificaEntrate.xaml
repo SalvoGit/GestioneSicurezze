@@ -119,14 +119,17 @@
                         </Border>
                         <Border Grid.Column="2" Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="Black">
                             <StackPanel Orientation="Vertical">
-                                <TextBox x:Name="txtColli" FontFamily="Verdana" FontSize="16" Padding="5" Margin="5" HorizontalContentAlignment="Center"
+                                <TextBox x:Name="txtColli" FontFamily="Verdana" FontSize="16" Padding="5" Margin="5" 
+                                         PreviewTextInput="OnlyNumbers"
+                                         HorizontalContentAlignment="Center"
                                  VerticalContentAlignment="Center"></TextBox>
                                 <Label x:Name="lblColli" Style="{StaticResource ErrorLabelStyle}" Padding="5"></Label>
                             </StackPanel>
                         </Border>
                         <Border Grid.Column="3" Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="Black">
                             <StackPanel Orientation="Vertical">
-                                <TextBox x:Name="txtPeso" FontFamily="Verdana" FontSize="16" Padding="5" Margin="5" HorizontalContentAlignment="Center"
+                                <TextBox x:Name="txtPeso" FontFamily="Verdana" FontSize="16" Padding="5" Margin="5"
+                                         HorizontalContentAlignment="Center" PreviewTextInput="OnlyNumbers"
                                  VerticalContentAlignment="Center"></TextBox>
                                 <Label x:Name="lblPeso" Style="{StaticResource ErrorLabelStyle}" Padding="5"></Label>
                             </StackPanel>

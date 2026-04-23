@@ -8,8 +8,8 @@ namespace GestioneSicurezze
 {
     public class DbOperation
     {
-        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDb"].ConnectionString;
-        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
+        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDb"].ConnectionString;
+        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
         public static IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
         public static string messageError = string.Empty;
         public static string GetErrorMessage => messageError;
