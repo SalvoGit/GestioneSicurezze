@@ -129,10 +129,13 @@ namespace GestioneSicurezze
 
         private void UpdateCloseButton_Click(object sender, RoutedEventArgs e)
         {
-            AggiornaDati();
-            SalvaNuovoPDF();
-            AggiornaSicurezza(); 
-            ChiudiFinistra();
+            if (AggiornaDati())
+            {
+                SalvaNuovoPDF(false);
+                AggiornaSicurezza();
+                ChiudiFinistra();
+            }
+            //AggiornaDati();            
         }
 
         private void OnlyNumbers(object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -226,7 +229,7 @@ namespace GestioneSicurezze
         {
             if (AggiornaDati())
             {
-                SalvaNuovoPDF();
+                SalvaNuovoPDF(true);
                 AggiornaSicurezza();
             }
             //else
@@ -235,7 +238,7 @@ namespace GestioneSicurezze
             //}
         }
 
-        private void SalvaNuovoPDF()
+        private void SalvaNuovoPDF(bool ristampaFile)
         {
             try
             {
@@ -250,7 +253,10 @@ namespace GestioneSicurezze
 
                 creazioneXray.GeneratePdf(Path.Combine(_userSettings.SavePath, nomeFile));
 
-                StampaFile(filePath);
+                if (ristampaFile)
+                {
+                    StampaFile(filePath);
+                }                
             }
             catch (Exception ex)
             {

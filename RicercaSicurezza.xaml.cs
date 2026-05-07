@@ -86,6 +86,12 @@ namespace GestioneSicurezze
 
         private void RistampaButton_Click(object sender, RoutedEventArgs e)
         {
+            if(String.IsNullOrEmpty(txtRicercaSicurezza.Text))
+            {
+                MessageBox.Show("Inserire un codice AWB valido per la ricerca", "Ristampa - Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             try
             {                
                 string nomeFile = $"{modelloXray.Progressivo}_{modelloXray.Cliente.Replace(" ", "_")}_{modelloXray.Awb}.pdf";
@@ -119,6 +125,12 @@ namespace GestioneSicurezze
         }
         private void ModificaButton_Click(object sender, RoutedEventArgs e)
         {
+            if (String.IsNullOrEmpty(txtRicercaSicurezza.Text))
+            {
+                MessageBox.Show("Inserire un codice AWB valido per la ricerca", "Ristampa - Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             ModificaEntrate modificaEntrate = new ModificaEntrate(modelloXray, _userSettings);
             modificaEntrate.ShowDialog();
             modelloXray = DbOperation.GetSicurezzaByAWB((txtRicercaSicurezza.Text));
