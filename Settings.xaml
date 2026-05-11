@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GestioneSicurezze"
         mc:Ignorable="d"
         Title="Mezzapesa - Gestione Sicurezze - Settings" SizeToContent="WidthAndHeight"
-        WindowStartupLocation="CenterScreen" WindowState="Normal" Loaded="LoadPrinter" Height="238">
+        WindowStartupLocation="CenterScreen" WindowState="Normal" Loaded="LoadPrinter" Height="300">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5"></ColumnDefinition>
@@ -36,8 +36,12 @@
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="5"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>                    
+                    <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="5"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>                    
                     <RowDefinition Height="5"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Label Content="Selezione Stampante" Style="{StaticResource LabelStyle}" FontSize="12"
@@ -65,8 +69,14 @@
                 <Label Grid.Column="0" Style="{StaticResource LabelStyle}" FontSize="12" Grid.Row="9" Content="Codice ENAC default"></Label>
                 <ComboBox x:Name="EnacCombobox" Width="350" Height="25" Margin="5,0" HorizontalAlignment="Left"
                             Grid.Column="1" Grid.Row="9" VerticalContentAlignment="Center"/>
+                <Label Grid.Column="0" Style="{StaticResource LabelStyle}" FontSize="12" Grid.Row="11" Content="Operatore Default"></Label>
+                <ComboBox x:Name="OperatoreCombobox" Width="350" Height="25" Margin="5,0" HorizontalAlignment="Left" 
+                          Grid.Column="1" Grid.Row="11" VerticalContentAlignment="Center"/>
+                <Label Grid.Column="0" Style="{StaticResource LabelStyle}" FontSize="12" Grid.Row="13" Content="Cliente Default"></Label>
+                <ComboBox x:Name="ClienteCombobox" Width="350" Height="25" Margin="5,0" HorizontalAlignment="Left" 
+                          Grid.Column="1" Grid.Row="13" VerticalContentAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" Margin="0,5"
-                            Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="3" HorizontalAlignment="Center" >
+                            Grid.Column="0" Grid.Row="15" Grid.ColumnSpan="3" HorizontalAlignment="Center" >
                     <Button Content="Salva Impostazioni" Style="{StaticResource ButtonStyle}" Width="200" Height="30" Click="SaveSettings"/>
                     <Button Content="Salva ed Esci" Style="{StaticResource ButtonStyle}" Width="200" Height="30" Margin="5,0" Click="SaveSettingsClose"/>
                     <Button Content="Esci" Style="{StaticResource ButtonStyle}" Width="200" Height="30" Margin="5,0" Click="Close"/>

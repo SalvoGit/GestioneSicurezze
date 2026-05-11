@@ -21,6 +21,14 @@ namespace GestioneSicurezze
         {
             return DbOperation.CodiciEnac();
         }
+        public static IReadOnlyList<CodiciOperatori> GetOperatorCodes()
+        {
+            return DbOperation.CodiciOperatori();
+        }
+        public static IReadOnlyList<SicurClienteCliente> GetClienteCodes()
+        {
+            return DbOperation.NominativiClienti();
+        }
         public static UserSettings ReadActualSettings()
         {
             string percorso = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), directorySettings, fileSettings);
@@ -38,7 +46,7 @@ namespace GestioneSicurezze
             return new UserSettings { PrintCopy = 1, UserPrinter = String.Empty, SavePath = saveDirectory, PrintSecur = defaultPrintSecur, DefaultEnacCode = String.Empty }; 
         }
 
-        public static string SaveSettings(string Printer, int Copies, string savePath, bool printSecur, string defaultEnac)
+        public static string SaveSettings(string Printer, int Copies, string savePath, bool printSecur, string defaultEnac, int defaultOperatore, string defaultClient)
         {
             try
             {
@@ -48,7 +56,9 @@ namespace GestioneSicurezze
                     PrintCopy = Copies,
                     SavePath = savePath,
                     PrintSecur = printSecur,
-                    DefaultEnacCode = defaultEnac
+                    DefaultEnacCode = defaultEnac,
+                    DefaultOperator = defaultOperatore,
+                    DefaultClient = defaultClient
                 };
                 string jsonString = JsonSerializer.Serialize(userSettings, new JsonSerializerOptions { WriteIndented = true });
                 string percorso = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), directorySettings, fileSettings);

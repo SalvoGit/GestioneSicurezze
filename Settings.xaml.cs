@@ -45,6 +45,27 @@ namespace GestioneSicurezze
             {
                 EnacCombobox.SelectedItem = userSettings.DefaultEnacCode;
             }
+
+            OperatoreCombobox.ItemsSource = UtilitySettings.GetOperatorCodes().Select(p => p.Codice_Operatore);
+
+            if (userSettings.DefaultOperator == 1)
+            {
+                OperatoreCombobox.SelectedIndex = 0;
+            }
+            else
+            {
+                OperatoreCombobox.SelectedItem = userSettings.DefaultOperator;
+            }
+
+            ClienteCombobox.ItemsSource = UtilitySettings.GetClienteCodes().Select(p => p.Cliente);
+            if(String.IsNullOrEmpty(userSettings.DefaultClient))
+            {
+                ClienteCombobox.SelectedIndex = 0;
+            }
+            else
+            {
+                ClienteCombobox.SelectedItem = userSettings.DefaultClient;
+            }
         }
 
         private void SaveSettings(object sender, RoutedEventArgs e)
@@ -70,10 +91,12 @@ namespace GestioneSicurezze
             }
 
             var selectedEnac = EnacCombobox.SelectedItem as string ?? string.Empty;
+            var selectedOperator = OperatoreCombobox.SelectedItem as int? ?? 1;       
+            var selectedClient = ClienteCombobox.SelectedItem as string ?? string.Empty;
 
             bool printSecur = rbPrintYes.IsChecked == true;
 
-            string messaggio = UtilitySettings.SaveSettings(PrinterComboBox.SelectedItem as string ?? string.Empty, numeroCopie, txtSavePath.Text, printSecur, selectedEnac);            
+            string messaggio = UtilitySettings.SaveSettings(PrinterComboBox.SelectedItem as string ?? string.Empty, numeroCopie, txtSavePath.Text, printSecur, selectedEnac, selectedOperator, selectedClient);            
 
             MessageBox.Show(messaggio, "Settings", MessageBoxButton.OK, MessageBoxImage.Information);            
         }
@@ -100,6 +123,6 @@ namespace GestioneSicurezze
             if (result == true) { 
                 txtSavePath.Text = dialog.SelectedPath; 
             }
-        }
+        }        
     }
 }

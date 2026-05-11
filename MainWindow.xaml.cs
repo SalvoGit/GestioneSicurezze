@@ -42,7 +42,7 @@ namespace GestioneSicurezze
             //{
             //    Debug.WriteLine(item);
             //}
-        }
+        }        
         private void LoadSettings()
         {
             _userSettings = UtilitySettings.ReadActualSettings();
@@ -386,7 +386,17 @@ namespace GestioneSicurezze
         {            
             LoadCodiciEnac();
             LoadOperatori();
-            LoadClienti();            
+            LoadClienti();
+            SetDefaultSettings();
+        }
+        private void SetDefaultSettings()
+        {
+            if(!string.IsNullOrEmpty(_userSettings.DefaultClient))
+            {
+                ComboCliente.SelectedValue = _userSettings.DefaultClient;
+            }
+            
+            ComboOperatori.SelectedValue = _userSettings.DefaultOperator;
         }
         private void LoadCodiciEnac()
         {
@@ -454,6 +464,7 @@ namespace GestioneSicurezze
             settingsWindow.ShowDialog();
             LoadSettings();
             SetDefaultEnacCode();
+            SetDefaultSettings();
         }
 
         private void NuovoClienteButton_Click(object sender, RoutedEventArgs e)
