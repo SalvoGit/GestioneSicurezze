@@ -52,19 +52,20 @@ namespace GestioneSicurezze
                 {
                     if(modelloXray.CodiceEnac == "IT/RA/00217-03")
                     {
-                        var imageBytes = GetImageBytes("GestioneSicurezze.Immagini.IndirizzoVignateImage.png");
+                        var imageBytes = GetImageBytes("GestioneSicurezze.Immagini.ITRA00217_03.png");
+                        //var imageBytes = GetImageBytes("GestioneSicurezze.Immagini.IndirizzoVignateImage.png");
                         r.RelativeItem().Image(imageBytes);
                         //r.RelativeItem().Image(Path.Combine(ImageDir, "Immagini", "IndirizzoVignateImage.png"));
                     }
                     else if(modelloXray.CodiceEnac == "IT/RA/00217-02")
                     {
-                        var imageBytes = GetImageBytes("GestioneSicurezze.Immagini.IndirizzoLiscateImage.png");
+                        var imageBytes = GetImageBytes("GestioneSicurezze.Immagini.ITRA00217_02.png");
                         r.RelativeItem().Image(imageBytes);
                         //r.RelativeItem().Image(Path.Combine(ImageDir,"Immagini","IndirizzoLiscateImage.png"));
                     }
                     else
                     {
-                        var imageBytes = GetImageBytes("GestioneSicurezze.Immagini.IndirizzoVignateOldImage.png");
+                        var imageBytes = GetImageBytes("GestioneSicurezze.Immagini.ITRA00217_01.png");
                         r.RelativeItem().Image(imageBytes);
                         //r.RelativeItem().Image(Path.Combine(ImageDir, "Immagini", "IndirizzoVignateOldImage.png"));
                     }

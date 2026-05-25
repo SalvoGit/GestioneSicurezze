@@ -372,7 +372,7 @@ namespace GestioneSicurezze
                 creazioneXray.GeneratePdf(Path.Combine(_userSettings.SavePath, nomeFile));*/
                 MessageBox.Show("Il file PDF da stampare non è stato trovato.\n\nControllare che il file esista o che il percorso sia corretto.", "File Non Trovato", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
-            }            
+            }
             
             StampaFile(filePath);
         }

@@ -15,6 +15,9 @@
     <None Remove="Immagini\IndirizzoLiscateImage.png" />
     <None Remove="Immagini\IndirizzoVignateImage.png" />
     <None Remove="Immagini\IndirizzoVignateOldImage.png" />
+    <None Remove="Immagini\ITRA00217_01.png" />
+    <None Remove="Immagini\ITRA00217_02.png" />
+    <None Remove="Immagini\ITRA00217_03.png" />
     <None Remove="Immagini\Logo.png" />
     <None Remove="Immagini\refresh.png" />
     <None Remove="Immagini\TopImage.jpg" />
@@ -47,6 +50,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Immagini\IndirizzoVignateOldImage.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Immagini\ITRA00217_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Immagini\ITRA00217_02.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Immagini\ITRA00217_03.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <Resource Include="Immagini\Logo.png">
