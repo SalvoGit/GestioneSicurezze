@@ -246,6 +246,13 @@ namespace GestioneSicurezze
                 string nomeFile = $"{modelloXray.Progressivo}_{modelloXray.Cliente.Replace(" ", "_")}_{modelloXray.Awb}.pdf";
                 string filePath = Path.Combine(_userSettings.SavePath, nomeFile);
 
+                string[] ricercaFile = Directory.GetFiles(_userSettings.SavePath, $"{modelloXray.Progressivo}_*_{modelloXray.Awb}.pdf");
+
+                if(ricercaFile.Length > 0)
+                {
+                    filePath = ricercaFile[0];
+                }
+
                 if (File.Exists(filePath))
                 {
                     File.Delete(filePath);
@@ -373,7 +380,7 @@ namespace GestioneSicurezze
                 MessageBox.Show("Il file PDF da stampare non è stato trovato.\n\nControllare che il file esista o che il percorso sia corretto.", "File Non Trovato", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            
+
             StampaFile(filePath);
         }
         private void StampaFile(string fileDaStampare)
