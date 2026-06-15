@@ -8,8 +8,8 @@ namespace GestioneSicurezze
 {
     public class DbOperation
     {
-        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDb"].ConnectionString;
-        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
+        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbSviluppo"].ConnectionString;
+        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
         public static IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
         public static string messageError = string.Empty;
         public static string GetErrorMessage => messageError;
@@ -67,7 +67,7 @@ namespace GestioneSicurezze
                     conn.Open();
                     string sqlCommand;
 
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = "SELECT COALESCE(MAX(\"PROGRESSIVO\"), 0) + 1 FROM sicurezze.\"SicurRegistroSicurezze\"";
                     }
@@ -98,8 +98,8 @@ namespace GestioneSicurezze
                 try
                 {
                     conn.Open();
-                    string sqlCommand;                    
-                    if (_connectionString.Contains("sicurezze"))
+                    string sqlCommand;
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -127,8 +127,8 @@ namespace GestioneSicurezze
                     
                     """;
                     }
-                    
-                    return result = conn.QuerySingle<DBResult>(sqlCommand, modelloXray);                    
+
+                    return result = conn.QuerySingle<DBResult>(sqlCommand, modelloXray);
                 }
                 catch (Exception ex)
                 {
@@ -147,7 +147,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -175,7 +175,7 @@ namespace GestioneSicurezze
                     
                     """;
                     }
-                    
+
                     int idGenerato = conn.ExecuteScalar<int>(sqlCommand, modelloXray);
                     return idGenerato;
                 }
@@ -185,7 +185,7 @@ namespace GestioneSicurezze
                     return -1;
                 }
             }
-                
+
         }
         public static DBResult InsertSicurezzaWithConflictDB(ModelloXray modelloXray)
         {
@@ -195,8 +195,8 @@ namespace GestioneSicurezze
                 try
                 {
                     conn.Open();
-                    string sqlCommand;                    
-                    if (_connectionString.Contains("sicurezze"))
+                    string sqlCommand;
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -286,7 +286,7 @@ namespace GestioneSicurezze
                 catch (Exception ex)
                 {
                     messageError = $"Errore durante l'inserimento nel database.\nErrore : {ex.Message}";
-                    result.ID = -1;                    
+                    result.ID = -1;
                     return result;
                 }
             }
@@ -301,7 +301,7 @@ namespace GestioneSicurezze
                     conn.Open();
                     string sqlCommand;
 
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -328,7 +328,7 @@ namespace GestioneSicurezze
                         WHERE "ID" = @ID
                     
                         """;
-                    }                    
+                    }
 
                     int righeAggiornate = conn.Execute(sqlCommand, modelloXray);
                     return righeAggiornate;
@@ -343,13 +343,13 @@ namespace GestioneSicurezze
         public static List<ModelloXray> SelectTop10(string operatore)
         {
             List<ModelloXray> lastinsert = new();
-            using(IDbConnection conn = CreateConnection())
+            using (IDbConnection conn = CreateConnection())
             {
                 try
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -370,7 +370,7 @@ namespace GestioneSicurezze
                         limit 10
                     
                     """;
-                    }                    
+                    }
 
                     return conn.Query<ModelloXray>(sqlCommand, new { Operatore = operatore }).ToList();
 
@@ -380,7 +380,7 @@ namespace GestioneSicurezze
                     messageError = $"Errore durante l'inserimento nel database.\nErrore : {ex.Message}";
                     return lastinsert;
                 }
-            }            
+            }
         }
         public static IReadOnlyList<CodiciEnac> CodiciEnac()
         {
@@ -390,7 +390,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -422,7 +422,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -454,7 +454,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = "SELECT * FROM sicurezze.\"SicurCliente\" order by \"Cliente\" asc";
                     }
@@ -478,7 +478,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -496,7 +496,7 @@ namespace GestioneSicurezze
                     
                     """;
                     }
-                    
+
                     int righeInserite = conn.ExecuteScalar<int>(sqlCommand, codiceOperatore);
                     return righeInserite;
                 }
@@ -515,7 +515,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if(_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurCodOperatore\" WHERE \"CODICE_OPERATORE\" = @Codice_Operatore";
                     }
@@ -523,7 +523,7 @@ namespace GestioneSicurezze
                     {
                         sqlCommand = "SELECT COUNT(*) FROM mezzapesa.\"SicurCodOperatore\" WHERE \"CODICE_OPERATORE\" = @Codice_Operatore";
                     }
-                    
+
                     int count = conn.ExecuteScalar<int>(sqlCommand, new { Codice_Operatore = codiceOperatore });
                     return count > 0;
                 }
@@ -542,7 +542,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if(_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurCliente\" WHERE \"Cliente\" = @cliente";
                     }
@@ -550,7 +550,7 @@ namespace GestioneSicurezze
                     {
                         sqlCommand = "SELECT COUNT(*) FROM mezzapesa.\"SicurCliente\" WHERE \"Cliente\" = @cliente";
                     }
-                    
+
                     int count = conn.ExecuteScalar<int>(sqlCommand, new { cliente = Cliente });
                     return count > 0;
                 }
@@ -569,7 +569,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -587,7 +587,7 @@ namespace GestioneSicurezze
                     
                     """;
                     }
-                    
+
                     int righeInserite = conn.ExecuteScalar<int>(sqlCommand, sicurCliente);
                     return righeInserite;
                 }
@@ -606,7 +606,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = "DELETE FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID";
                     }
@@ -615,7 +615,7 @@ namespace GestioneSicurezze
                         sqlCommand = "DELETE FROM mezzapesa.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID";
                     }
 
-                    
+
                     int righeCancellate = conn.Execute(sqlCommand, new { ID });
                     return righeCancellate;
                 }
@@ -636,7 +636,7 @@ namespace GestioneSicurezze
                     conn.Open();
                     string sqlCommand;
 
-                    if (_connectionString.Contains("sicurezze"))
+                    if (_connectionString.Contains("Prod"))
                     {
                         sqlCommand = """
                     
@@ -656,7 +656,7 @@ namespace GestioneSicurezze
                     
                     """;
                     }
-                    
+
                     return conn.QueryFirstOrDefault<ModelloXray>(sqlCommand, new { sicurezza });
                 }
                 catch (Exception ex)
@@ -667,5 +667,95 @@ namespace GestioneSicurezze
             }
 
         }
-    }
+
+        public static int SalvaSigillo(Sigillo sigillo)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();                    
+                    int result;
+
+                    if (_connectionString.Contains("Prod"))
+                    {
+                        result = conn.Execute("CALL sicurezze.inserisci_sigillo(@NRSIGILLO,@DESTINAZIONE,@TARGA,@TRASPORTATORE)", sigillo);
+                    }
+                    else
+                    {
+                        result = conn.Execute("CALL mezzapesa.inserisci_sigillo(@NRSIGILLO,@DESTINAZIONE,@TARGA,@TRASPORTATORE)", sigillo);
+                    }
+
+                    if (result == -1)
+                    {
+                        messageError = "Sigillo salvato correttamente.";
+                    }                    
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il salvataggio del sigillo.\nErrore : {ex.Message}";
+                    return -2;
+                }
+            }
+        }
+        public static List<Sigillo> GetAllSigilli()
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    List<Sigillo> sigilli = new List<Sigillo>();
+                    messageError = string.Empty;
+
+                    if (_connectionString.Contains("Prod"))
+                    {
+                        sigilli = conn.Query<Sigillo>("SELECT * FROM sicurezze.\"RegistroSigilli\" ORDER BY \"DATAINSERIMENTO\" DESC", new { }).ToList();
+                    }
+                    else
+                    {
+                        sigilli = conn.Query<Sigillo>("SELECT * FROM mezzapesa.\"RegistroSigilli\" ORDER BY \"DATAINSERIMENTO\" DESC").ToList();
+                    }
+
+                    return sigilli;                    
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero degli ultimi sigilli inseriti.\nErrore : {ex.Message}";
+                    return null;
+                }
+            }
+        }
+
+        public static List<Sigillo> SearchByString(string searchTerm, string searchField)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    List<Sigillo> sigilli = new List<Sigillo>();
+                    messageError = string.Empty;
+
+                    if (_connectionString.Contains("Prod"))
+                    {
+                        sigilli = conn.Query<Sigillo>($"SELECT * FROM sicurezze.\"RegistroSigilli\" WHERE \"{searchField}\" LIKE @searchTerm ORDER BY \"DATAINSERIMENTO\" DESC", new { searchTerm = $"%{searchTerm}%" }).ToList();
+                    }
+                    else
+                    {
+                        sigilli = conn.Query<Sigillo>($"SELECT * FROM mezzapesa.\"RegistroSigilli\" WHERE \"{searchField}\" LIKE @searchTerm ORDER BY \"DATAINSERIMENTO\" DESC", new { searchTerm = $"%{searchTerm}%" }).ToList();
+                    }
+
+                    return sigilli;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante la ricerca dei sigilli.\nErrore : {ex.Message}";
+                    return null;
+                }
+            }
+        }
+}
 }

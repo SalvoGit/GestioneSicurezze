@@ -538,5 +538,11 @@ namespace GestioneSicurezze
                 }
             }
         }
+
+        private void SigilliButton_Click(object sender, RoutedEventArgs e)
+        {
+            Sigilli sigilli = new Sigilli();
+            sigilli.ShowDialog();
+        }
     }
 }

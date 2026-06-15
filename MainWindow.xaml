@@ -361,6 +361,7 @@
                     <Button x:Name="NuoOpButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="InsertNuovoOperatore" Margin="5">Nuovo Operatore</Button>
                     <Button x:Name="NuovoClienteButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="NuovoClienteButton_Click" Margin="5">Nuovo Cliente</Button>
                     <Button x:Name="SettingsButton" Click="OpenSettings" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5">Settings</Button>
+                    <Button x:Name="SigilliButton" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5" Click="SigilliButton_Click">Sigilli</Button>
                 </StackPanel>
             </Border>
             <!--#endregion-->
