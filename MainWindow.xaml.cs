@@ -132,6 +132,21 @@ namespace GestioneSicurezze
                     //}
                     /*******************************************************/
 
+
+                    /**************VERIFICO SE L'AWB E' GIA' STATO INSERITO NELLA MEZZ'ORA PRECEDENTE *****************/
+                    MessageBoxResult sceltaOperatore;
+
+                    if(DbOperation.ThirtyMinutesCheck(modelloXray.Awb))
+                    {
+                        sceltaOperatore = MessageBox.Show($"L'AWB {modelloXray.Awb} è già stato inserito nel database nella mezz'ora precedente.\n\nSi desidera procedere comunque all'inserimento?",
+                            "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (sceltaOperatore == MessageBoxResult.No)
+                        {
+                            return;
+                        }
+                    }
+                    /******************************************************************************************************/
+
                     /****** ******** MODIFICA DEL 23/03/2026 PER LA GESTIONE DEI CONFLICTS NEL DB *****************/
                     DBResult risultato = DbOperation.InsertSicurezzaDBNoProg(modelloXray);
                     if (risultato.ID == -1)

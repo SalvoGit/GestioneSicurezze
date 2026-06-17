@@ -90,6 +90,58 @@ namespace GestioneSicurezze
                 }
             }
         }
+        public static bool ThirtyMinutesCheck(string awb)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("Prod"))
+                    {
+                        sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"AWB\" = @AWB AND \"DATAESECUZIONE\" >= NOW() - INTERVAL '30 minutes' AND \"DATAESECUZIONE\" < NOW()";
+                    }
+                    else
+                    {
+                        sqlCommand = "SELECT COUNT(*) FROM mezzapesa.\"SicurRegistroSicurezze\" WHERE \"AWB\" = @AWB AND \"DATAESECUZIONE\" >= NOW() - INTERVAL '30 minutes' AND \"DATAESECUZIONE\" < NOW()";
+                    }
+                    int count = conn.ExecuteScalar<int>(sqlCommand, new { AWB = awb });
+                    return count > 0;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante la verifica del controllo 30 minuti.\nErrore : {ex.Message}";
+                    return false;
+                }
+            }
+        }
+        public static bool CheckIfAWBExists(string awb)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (_connectionString.Contains("Prod"))
+                    {
+                        sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"AWB\" = @AWB";
+                    }
+                    else
+                    {
+                        sqlCommand = "SELECT COUNT(*) FROM mezzapesa.\"SicurRegistroSicurezze\" WHERE \"AWB\" = @AWB";
+                    }
+                    int count = conn.ExecuteScalar<int>(sqlCommand, new { AWB = awb });
+                    return count > 0;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante la verifica dell'esistenza del progressivo.\nErrore : {ex.Message}";
+                    return false;
+                }
+            }
+        }
         public static DBResult InsertSicurezzaDBNoProg(ModelloXray modelloXray)
         {
             using (IDbConnection conn = CreateConnection())
