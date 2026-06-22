@@ -10,7 +10,7 @@ namespace GestioneSicurezze
     {
         /************* CONNESSIONE AL DATABASE SVILUPPO*************/
         //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbSviluppo"].ConnectionString;
-        //bool isProd = false;
+        //private static readonly bool isProd = false;
 
         /************* CONNESSIONE AL DATABASE PRODUZIONE*************/
         private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;

@@ -82,7 +82,7 @@
                                 <Image Source="/Immagini/refresh.png"></Image>
                             </Button>
                         </StackPanel>
-                        <Label x:Name="lblCodEU" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="5" Margin="0,5,0,0"></Label>
+                        <Label x:Name="lblCodEU" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="0" Margin="0,5,0,0"></Label>
                     </StackPanel>
                     <!--#endregion-->
 
@@ -99,7 +99,7 @@
                                 <Image Source="/Immagini/refresh.png"></Image>
                             </Button>
                         </StackPanel>
-                        <Label x:Name="lblOperatore" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="5" Margin="0,5,0,0"></Label>
+                        <Label x:Name="lblOperatore" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="0" Margin="0,5,0,0"></Label>
                     </StackPanel>
                     <!--#endregion-->
                     
@@ -118,7 +118,7 @@
                                 <Image Source="/Immagini/refresh.png"></Image>
                             </Button>
                         </StackPanel>
-                        <Label x:Name="lblCliente" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="5" Margin="0,5,0,0"></Label>
+                        <Label x:Name="lblCliente" Style="{StaticResource ErrorLabelStyle}" Height="15" Padding="0" Margin="0,5,0,0"></Label>
                     </StackPanel>
                     <!--#endregion-->
                 </StackPanel>
