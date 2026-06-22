@@ -30,10 +30,14 @@ namespace GestioneSicurezze
             InitializeComponent();
             LoadSettings();            
             QuestPDF.Settings.License = LicenseType.Community;
-            lis_UltimiInseriti.ItemsSource = ultimiInserimenti;            
+            lis_UltimiInseriti.ItemsSource = ultimiInserimenti;
             /*********MODIFICA DEL 23/03/2026 PER LA GESTIONE DEL PROGRESSIVO IN CASO DI CONFLICT NEL DB*********/
             //txtProgressivo.Text = DbOperation.GetNextProgressivo().ToString();
             /****************************************************************************/
+            if (!_userSettings.Modificabile)
+            {
+                ComboEnac.IsEnabled = false;
+            }
             txtEntrata.Focus();
             //txtAwb.Focus();
             //var assembly = System.Reflection.Assembly.GetExecutingAssembly();
@@ -427,6 +431,15 @@ namespace GestioneSicurezze
         }
         private void SetDefaultEnacCode()
         {
+            if(_userSettings.Modificabile)
+            {
+                ComboEnac.IsEnabled = true;
+            }
+            else
+            {
+                ComboEnac.IsEnabled = false;
+            }
+
             if (!string.IsNullOrEmpty(_userSettings.DefaultEnacCode))
             {
                 ComboEnac.SelectedValue = _userSettings.DefaultEnacCode;

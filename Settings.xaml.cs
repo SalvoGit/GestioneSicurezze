@@ -35,15 +35,24 @@ namespace GestioneSicurezze
                 rbPrintNo.IsChecked = true;
             }
 
-            EnacCombobox.ItemsSource = UtilitySettings.GetEnacCodes().Select(p=>p.Codice_EU);
+            EnacCombobox.ItemsSource = UtilitySettings.GetEnacCodes().Select(p => p.Codice_EU);
 
             if (String.IsNullOrEmpty(userSettings.DefaultEnacCode))
             {
-                EnacCombobox.SelectedIndex = 0;                
+                EnacCombobox.SelectedIndex = 0;
             }
             else
             {
                 EnacCombobox.SelectedItem = userSettings.DefaultEnacCode;
+            }
+
+            if (userSettings.Modificabile)
+            {
+                chkModificabile.IsChecked = true;
+            }
+            else
+            {
+                chkModificabile.IsChecked = false;
             }
 
             OperatoreCombobox.ItemsSource = UtilitySettings.GetOperatorCodes().Select(p => p.Codice_Operatore);
@@ -58,7 +67,7 @@ namespace GestioneSicurezze
             }
 
             ClienteCombobox.ItemsSource = UtilitySettings.GetClienteCodes().Select(p => p.Cliente);
-            if(String.IsNullOrEmpty(userSettings.DefaultClient))
+            if (String.IsNullOrEmpty(userSettings.DefaultClient))
             {
                 ClienteCombobox.SelectedIndex = 0;
             }
@@ -95,8 +104,9 @@ namespace GestioneSicurezze
             var selectedClient = ClienteCombobox.SelectedItem as string ?? string.Empty;
 
             bool printSecur = rbPrintYes.IsChecked == true;
+            bool modificabile = chkModificabile.IsChecked == true;
 
-            string messaggio = UtilitySettings.SaveSettings(PrinterComboBox.SelectedItem as string ?? string.Empty, numeroCopie, txtSavePath.Text, printSecur, selectedEnac, selectedOperator, selectedClient);            
+            string messaggio = UtilitySettings.SaveSettings(PrinterComboBox.SelectedItem as string ?? string.Empty, numeroCopie, txtSavePath.Text, printSecur, selectedEnac, selectedOperator, selectedClient, modificabile);            
 
             MessageBox.Show(messaggio, "Settings", MessageBoxButton.OK, MessageBoxImage.Information);            
         }

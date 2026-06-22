@@ -46,7 +46,7 @@ namespace GestioneSicurezze
             return new UserSettings { PrintCopy = 1, UserPrinter = String.Empty, SavePath = saveDirectory, PrintSecur = defaultPrintSecur, DefaultEnacCode = String.Empty }; 
         }
 
-        public static string SaveSettings(string Printer, int Copies, string savePath, bool printSecur, string defaultEnac, int defaultOperatore, string defaultClient)
+        public static string SaveSettings(string Printer, int Copies, string savePath, bool printSecur, string defaultEnac, int defaultOperatore, string defaultClient, bool modificabile)
         {
             try
             {
@@ -58,7 +58,8 @@ namespace GestioneSicurezze
                     PrintSecur = printSecur,
                     DefaultEnacCode = defaultEnac,
                     DefaultOperator = defaultOperatore,
-                    DefaultClient = defaultClient
+                    DefaultClient = defaultClient,
+                    Modificabile = modificabile
                 };
                 string jsonString = JsonSerializer.Serialize(userSettings, new JsonSerializerOptions { WriteIndented = true });
                 string percorso = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), directorySettings, fileSettings);

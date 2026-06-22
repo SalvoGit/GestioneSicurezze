@@ -69,9 +69,13 @@
                 <Label Grid.Column="0" Style="{StaticResource LabelStyle}" FontSize="12" Grid.Row="9" Content="Codice ENAC default"></Label>
                 <ComboBox x:Name="EnacCombobox" Width="350" Height="25" Margin="5,0" HorizontalAlignment="Left"
                             Grid.Column="1" Grid.Row="9" VerticalContentAlignment="Center"/>
+                <CheckBox x:Name="chkModificabile" Content="Modificabile" Grid.Column="3" Grid.Row="9" 
+                            Margin="5,0" VerticalContentAlignment="Center" FontWeight="Bold" />
                 <Label Grid.Column="0" Style="{StaticResource LabelStyle}" FontSize="12" Grid.Row="11" Content="Operatore Default"></Label>
                 <ComboBox x:Name="OperatoreCombobox" Width="350" Height="25" Margin="5,0" HorizontalAlignment="Left" 
                           Grid.Column="1" Grid.Row="11" VerticalContentAlignment="Center"/>
+                
+
                 <Label Grid.Column="0" Style="{StaticResource LabelStyle}" FontSize="12" Grid.Row="13" Content="Cliente Default"></Label>
                 <ComboBox x:Name="ClienteCombobox" Width="350" Height="25" Margin="5,0" HorizontalAlignment="Left" 
                           Grid.Column="1" Grid.Row="13" VerticalContentAlignment="Center"/>
