@@ -8,13 +8,20 @@ namespace GestioneSicurezze
 {
     public class DbOperation
     {
+        /************* CONNESSIONE AL DATABASE SVILUPPO*************/
         //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbSviluppo"].ConnectionString;
+        //bool isProd = false;
+
+        /************* CONNESSIONE AL DATABASE PRODUZIONE*************/
         private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
+        private static readonly bool isProd = true;
+
         public static IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
         public static string messageError = string.Empty;
         public static string GetErrorMessage => messageError;
         static IDbConnection connection;
 
+        #region "Metodo per testare la connessione al database"
         public static bool TestConnection()
         {
             using var connection = CreateConnection();
@@ -30,6 +37,8 @@ namespace GestioneSicurezze
                 return false;
             }
         }
+        #endregion
+        #region "OpenConnection e CloseConnection"
         public static bool OpenConnection()
         {
             connection = CreateConnection();
@@ -57,6 +66,9 @@ namespace GestioneSicurezze
                 return false;
             }
         }
+        #endregion
+
+        #region "Metodo per recuperare il prossimo progressivo"
         public static int GetNextProgressivo()
         {
             //using var connection = CreateConnection();
@@ -67,7 +79,7 @@ namespace GestioneSicurezze
                     conn.Open();
                     string sqlCommand;
 
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = "SELECT COALESCE(MAX(\"PROGRESSIVO\"), 0) + 1 FROM sicurezze.\"SicurRegistroSicurezze\"";
                     }
@@ -90,6 +102,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per verificare se esiste un record con lo stesso AWB negli ultimi 30 minuti"
         public static bool ThirtyMinutesCheck(string awb)
         {
             using (IDbConnection conn = CreateConnection())
@@ -98,7 +113,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"AWB\" = @AWB AND \"DATAESECUZIONE\" >= NOW() - INTERVAL '30 minutes' AND \"DATAESECUZIONE\" < NOW()";
                     }
@@ -116,6 +131,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per verificare se esiste un record con lo stesso AWB"
         public static bool CheckIfAWBExists(string awb)
         {
             using (IDbConnection conn = CreateConnection())
@@ -124,7 +142,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"AWB\" = @AWB";
                     }
@@ -142,6 +160,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per inserire un nuovo record nel database"
         public static DBResult InsertSicurezzaDBNoProg(ModelloXray modelloXray)
         {
             using (IDbConnection conn = CreateConnection())
@@ -151,7 +172,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -191,6 +212,9 @@ namespace GestioneSicurezze
             }
 
         }
+        #endregion
+
+        #region "Metodo per inserire un nuovo record nel database"
         public static int InsertSicurezzaDB(ModelloXray modelloXray)
         {
             using (IDbConnection conn = CreateConnection())
@@ -199,7 +223,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -239,6 +263,9 @@ namespace GestioneSicurezze
             }
 
         }
+        #endregion
+
+        #region "Metodo per inserire un nuovo record nel database"
         public static DBResult InsertSicurezzaWithConflictDB(ModelloXray modelloXray)
         {
             using (IDbConnection conn = CreateConnection())
@@ -248,7 +275,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -344,6 +371,9 @@ namespace GestioneSicurezze
             }
 
         }
+        #endregion
+
+        #region "Metodo per aggiornare un record nel database"
         public static int UpdateSicurezzaDB(ModelloXray modelloXray)
         {
             using (IDbConnection conn = CreateConnection())
@@ -353,7 +383,7 @@ namespace GestioneSicurezze
                     conn.Open();
                     string sqlCommand;
 
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -392,6 +422,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per selezionare i primi 10 record"
         public static List<ModelloXray> SelectTop10(string operatore)
         {
             List<ModelloXray> lastinsert = new();
@@ -401,7 +434,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -434,6 +467,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per selezionare i codici Enac"
         public static IReadOnlyList<CodiciEnac> CodiciEnac()
         {
             using (IDbConnection conn = CreateConnection())
@@ -442,7 +478,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -466,6 +502,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per selezionare i codici Operatori"
         public static IReadOnlyList<CodiciOperatori> CodiciOperatori()
         {
             using (IDbConnection conn = CreateConnection())
@@ -474,7 +513,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -498,6 +537,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per selezionare i nominativi dei clienti"
         public static IReadOnlyList<SicurClienteCliente> NominativiClienti()
         {
             using (IDbConnection conn = CreateConnection())
@@ -506,7 +548,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = "SELECT * FROM sicurezze.\"SicurCliente\" order by \"Cliente\" asc";
                     }
@@ -522,6 +564,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per inserire un nuovo operatore nel database"
         public static int InsertNewOperator(CodiciOperatori codiceOperatore)
         {
             using (IDbConnection conn = CreateConnection())
@@ -530,7 +575,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -559,6 +604,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per verificare se esiste un operatore con lo stesso codice"
         public static bool OperatoreEsistente(int codiceOperatore)
         {
             using (IDbConnection conn = CreateConnection())
@@ -567,7 +615,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurCodOperatore\" WHERE \"CODICE_OPERATORE\" = @Codice_Operatore";
                     }
@@ -586,6 +634,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per verificare se esiste un cliente con lo stesso nominativo"
         public static bool ClienteEsistente(string Cliente)
         {
             using (IDbConnection conn = CreateConnection())
@@ -594,7 +645,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = "SELECT COUNT(*) FROM sicurezze.\"SicurCliente\" WHERE \"Cliente\" = @cliente";
                     }
@@ -613,6 +664,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per inserire un nuovo cliente nel database"
         public static int InsertNewCliente(SicurClienteCliente sicurCliente)
         {
             using (IDbConnection conn = CreateConnection())
@@ -621,7 +675,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -650,6 +704,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per cancellare una sicurezza dal database"
         public static int DeleteSicurezza(int ID)
         {
             using (IDbConnection conn = CreateConnection())
@@ -658,7 +715,7 @@ namespace GestioneSicurezze
                 {
                     conn.Open();
                     string sqlCommand;
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = "DELETE FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID";
                     }
@@ -678,6 +735,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per recuperare una sicurezza dal database tramite AWB"
         public static ModelloXray GetSicurezzaByAWB(string sicurezza)
         {
             using (IDbConnection conn = CreateConnection())
@@ -688,7 +748,7 @@ namespace GestioneSicurezze
                     conn.Open();
                     string sqlCommand;
 
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sqlCommand = """
                     
@@ -719,7 +779,9 @@ namespace GestioneSicurezze
             }
 
         }
+        #endregion
 
+        #region "Metodo per salvare un sigillo nel database"
         public static int SalvaSigillo(Sigillo sigillo)
         {
             using (IDbConnection conn = CreateConnection())
@@ -729,7 +791,7 @@ namespace GestioneSicurezze
                     conn.Open();                    
                     int result;
 
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         result = conn.Execute("CALL sicurezze.inserisci_sigillo(@NRSIGILLO,@DESTINAZIONE,@TARGA,@TRASPORTATORE)", sigillo);
                     }
@@ -752,6 +814,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
+
+        #region "Metodo per recuperare tutti i sigilli dal database"
         public static List<Sigillo> GetAllSigilli()
         {
             using (IDbConnection conn = CreateConnection())
@@ -762,7 +827,7 @@ namespace GestioneSicurezze
                     List<Sigillo> sigilli = new List<Sigillo>();
                     messageError = string.Empty;
 
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sigilli = conn.Query<Sigillo>("SELECT * FROM sicurezze.\"RegistroSigilli\" ORDER BY \"DATAINSERIMENTO\" DESC", new { }).ToList();
                     }
@@ -780,7 +845,9 @@ namespace GestioneSicurezze
                 }
             }
         }
+        #endregion
 
+        #region "Metodo per cercare i sigilli nel database in base a un termine di ricerca e un campo specifico"
         public static List<Sigillo> SearchByString(string searchTerm, string searchField)
         {
             using (IDbConnection conn = CreateConnection())
@@ -791,7 +858,7 @@ namespace GestioneSicurezze
                     List<Sigillo> sigilli = new List<Sigillo>();
                     messageError = string.Empty;
 
-                    if (_connectionString.Contains("Prod"))
+                    if (isProd)
                     {
                         sigilli = conn.Query<Sigillo>($"SELECT * FROM sicurezze.\"RegistroSigilli\" WHERE \"{searchField}\" LIKE @searchTerm ORDER BY \"DATAINSERIMENTO\" DESC", new { searchTerm = $"%{searchTerm}%" }).ToList();
                     }
@@ -809,5 +876,6 @@ namespace GestioneSicurezze
                 }
             }
         }
-}
+        #endregion
+    }
 }
