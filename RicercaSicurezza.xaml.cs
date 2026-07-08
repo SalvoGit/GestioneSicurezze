@@ -1,4 +1,5 @@
 ﻿using GestioneSicurezze.Models;
+using GestioneSicurezze.MultiAwb;
 using PdfiumViewer;
 using System.Drawing.Printing;
 using System.Windows;
@@ -30,26 +31,55 @@ namespace GestioneSicurezze
                 return;
             }
 
-            modelloXray = DbOperation.GetSicurezzaByAWB((txtRicercaSicurezza.Text));
-
-            if (modelloXray != null)
+            // Restituzione della riga singola
+            //modelloXray = DbOperation.GetSicurezzaByAWB((txtRicercaSicurezza.Text));
+            /*if (modelloXray != null)
             {
-                SetCampi();
+                SetCampi(modelloXray);
             }
             else
             {
-                if(String.IsNullOrEmpty(DbOperation.GetErrorMessage))
+                if (String.IsNullOrEmpty(DbOperation.GetErrorMessage))
                 {
                     MessageBox.Show("Nessun risultato trovato", "Ricerca Sicurezza - Nessun Risultato", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     MessageBox.Show($"Errore durante la ricerca: {DbOperation.GetErrorMessage}", "Ricerca Sicurezza - Errore", MessageBoxButton.OK, MessageBoxImage.Error);
-                }                
+                }
+            }*/
+
+            //Restituzione di una lista di righe
+            List<ModelloXray> listaSicurezze = DbOperation.GetListSicurezzeByAWB(txtRicercaSicurezza.Text.ToUpper());
+
+            if (listaSicurezze != null && listaSicurezze.Count == 1)
+            {
+                SetCampi(listaSicurezze[0]);
+                modelloXray = listaSicurezze[0];
+            }
+            else if (listaSicurezze.Count > 1)
+            {
+                SelezionaAwbMultipli selezionaAwbMultipli = new SelezionaAwbMultipli();
+                selezionaAwbMultipli.SetAwbList(listaSicurezze);
+                selezionaAwbMultipli.ShowDialog();
+                ModelloXray? selectedItem = selezionaAwbMultipli.GetSelectedItem();
+                SetCampi(selectedItem);
+                modelloXray = selectedItem;
+            }
+            else
+            {
+                if (String.IsNullOrEmpty(DbOperation.GetErrorMessage))
+                {
+                    MessageBox.Show("Nessun risultato trovato", "Ricerca Sicurezza - Nessun Risultato", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"Errore durante la ricerca: {DbOperation.GetErrorMessage}", "Ricerca Sicurezza - Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
-        private void SetCampi()
+        private void SetCampi(ModelloXray modelloXray)
         {
             txtProgressivo.Text = modelloXray.Progressivo.ToString();
             txtCodiceEU.Text = modelloXray.CodiceEnac;
@@ -133,8 +163,9 @@ namespace GestioneSicurezze
 
             ModificaEntrate modificaEntrate = new ModificaEntrate(modelloXray, _userSettings);
             modificaEntrate.ShowDialog();
-            modelloXray = DbOperation.GetSicurezzaByAWB((txtRicercaSicurezza.Text));
-            SetCampi();
+            //modelloXray = DbOperation.GetSicurezzaByAWB((txtRicercaSicurezza.Text));
+            modelloXray = DbOperation.GetSicurezzaByAWBandID((txtRicercaSicurezza.Text), modelloXray.ID);
+            SetCampi(modelloXray);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

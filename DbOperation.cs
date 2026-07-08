@@ -877,5 +877,93 @@ namespace GestioneSicurezze
             }
         }
         #endregion
+
+        #region "Metodo per recuperare una lista di sicurezze dal database tramite AWB"
+        public static List<ModelloXray> GetListSicurezzeByAWB(string sicurezza)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    messageError = string.Empty;
+                    conn.Open();
+                    string sqlCommand;
+
+                    if (isProd)
+                    {
+                        sqlCommand = """
+                    
+                    SELECT *
+                    FROM sicurezze."SicurRegistroSicurezze" 
+                    WHERE "AWB" = @sicurezza
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    SELECT *
+                    FROM mezzapesa."SicurRegistroSicurezze" 
+                    WHERE "AWB" = @sicurezza
+                    
+                    """;
+                    }
+
+                    return [.. conn.Query<ModelloXray>(sqlCommand, new { sicurezza })];
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero della sicurezza.\nErrore : {ex.Message}";
+                    return null;
+                }
+            }
+
+        }
+        #endregion
+
+        #region "Metodo per recuperare una sicurezza dal database tramite AWB e ID"
+        public static ModelloXray GetSicurezzaByAWBandID(string sicurezza, int id)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    messageError = string.Empty;
+                    conn.Open();
+                    string sqlCommand;
+
+                    if (isProd)
+                    {
+                        sqlCommand = """
+                    
+                    SELECT *
+                    FROM sicurezze."SicurRegistroSicurezze" 
+                    WHERE "AWB" = @sicurezza AND "ID" = @id
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    SELECT *
+                    FROM mezzapesa."SicurRegistroSicurezze" 
+                    WHERE "AWB" = @sicurezza AND "ID" = @id
+                    
+                    """;
+                    }
+
+                    return conn.QueryFirstOrDefault<ModelloXray>(sqlCommand, new { sicurezza, id });
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero della sicurezza.\nErrore : {ex.Message}";
+                    return null;
+                }
+            }
+
+        }
+        #endregion
     }
 }

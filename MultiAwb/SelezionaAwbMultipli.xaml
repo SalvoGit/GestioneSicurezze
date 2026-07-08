@@ -1,0 +1,76 @@
+﻿<Window x:Class="GestioneSicurezze.MultiAwb.SelezionaAwbMultipli"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GestioneSicurezze.MultiAwb"
+        mc:Ignorable="d"
+        Title="Mezzapesa - Seleziona AWB" SizeToContent="WidthAndHeight"
+            Background="#F7F8E2" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="5"/>            
+        </Grid.RowDefinitions>
+
+        <Border Style="{StaticResource BorderStyle}"
+                Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Label Style="{DynamicResource LabelStyle}" 
+                       Content="Risultati ricerca per AWB numero: " FontSize="16" Margin="5"/>
+                <Label Style="{DynamicResource LabelStyle}" 
+                       Content="157-49052485" FontSize="16" Margin="5"/>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource BorderStyle}"
+                Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3">
+            <StackPanel Margin="5,5">
+                <ListView x:Name="lis_listaAwb" FontSize="16" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="PROG." Width="50" DisplayMemberBinding="{Binding Progressivo}"></GridViewColumn>
+                            <GridViewColumn Header="ENTR. NR." Width="125" DisplayMemberBinding="{Binding NrEntrata}"></GridViewColumn>
+                            <GridViewColumn Header="AWB" Width="100" DisplayMemberBinding="{Binding Awb}"></GridViewColumn>
+                            <GridViewColumn Header="CODICE-EU" Width="100" DisplayMemberBinding="{Binding CodiceEnac}"></GridViewColumn>                            
+                            <GridViewColumn Header="CLIENTE" Width="250" DisplayMemberBinding="{Binding Cliente}"></GridViewColumn>                            
+                            <GridViewColumn Header="COLLI" Width="50" DisplayMemberBinding="{Binding Colli}"></GridViewColumn>
+                            <GridViewColumn Header="KG" Width="50" DisplayMemberBinding="{Binding Peso}"></GridViewColumn>
+                            <GridViewColumn Header="DESTIN." Width="75" DisplayMemberBinding="{Binding Destinazione}"></GridViewColumn>
+                            <GridViewColumn Header="AZIONI" Width="auto">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Content="Seleziona" Click="Seleziona" Padding="2,5" Background="Green" Foreground="White" Tag="{Binding}"></Button>                                            
+                                            
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource BorderStyle}"
+                Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5" Height="50">
+                <Button x:Name="ExitButton" Click="CloseWindow" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5">Chiudi</Button>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</Window>
