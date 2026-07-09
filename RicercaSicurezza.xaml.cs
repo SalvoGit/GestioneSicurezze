@@ -136,12 +136,13 @@ namespace GestioneSicurezze
                 {
                     using (var document = PdfDocument.Load(percorsoFile))
                     {
-                        using (var printDocument = document.CreatePrintDocument())
+                        using (var printDocument = document.CreatePrintDocument(PdfPrintMode.ShrinkToMargin))
                         {
                             printDocument.PrinterSettings.PrinterName = printerName;
                             printDocument.PrinterSettings.Copies = (short)_userSettings.PrintCopy;
                             printDocument.PrinterSettings.Duplex = Duplex.Simplex;
                             printDocument.PrinterSettings.PrintToFile = false;
+                            printDocument.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
                             printDocument.Print();
                         }
                     }
