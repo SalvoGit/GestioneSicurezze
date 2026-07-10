@@ -9,12 +9,12 @@ namespace GestioneSicurezze
     public class DbOperation
     {
         /************* CONNESSIONE AL DATABASE SVILUPPO*************/
-        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbSviluppo"].ConnectionString;
-        //private static readonly bool isProd = false;
+        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbSviluppo"].ConnectionString;
+        private static readonly bool isProd = false;
 
         /************* CONNESSIONE AL DATABASE PRODUZIONE*************/
-        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
-        private static readonly bool isProd = true;
+        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
+        //private static readonly bool isProd = true;
 
         public static IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
         public static string messageError = string.Empty;
@@ -788,7 +788,7 @@ namespace GestioneSicurezze
             {
                 try
                 {
-                    conn.Open();                    
+                    conn.Open();
                     int result;
 
                     if (isProd)
@@ -803,7 +803,7 @@ namespace GestioneSicurezze
                     if (result == -1)
                     {
                         messageError = "Sigillo salvato correttamente.";
-                    }                    
+                    }
 
                     return result;
                 }
@@ -836,7 +836,7 @@ namespace GestioneSicurezze
                         sigilli = conn.Query<Sigillo>("SELECT * FROM mezzapesa.\"RegistroSigilli\" ORDER BY \"DATAINSERIMENTO\" DESC").ToList();
                     }
 
-                    return sigilli;                    
+                    return sigilli;
                 }
                 catch (Exception ex)
                 {
@@ -963,6 +963,163 @@ namespace GestioneSicurezze
                 }
             }
 
+        }
+        #endregion
+
+        #region "Metodo per inserire la lista di autisti/targhe/ragioni sociali"
+        public static int InsertNewAutistaTarga(AutistaTarga autistaTarga)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (isProd)
+                    {
+                        sqlCommand = """
+                    
+                    INSERT INTO sicurezze."SicurAutistaTarga" ("Autista", "Targa", "RagioneSociale")
+                    VALUES (@Autista, @Targa, @RagioneSociale)
+                    RETURNING "ID"
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    INSERT INTO mezzapesa."SicurAutistaTarga" ("Autista", "Targa", "RagioneSociale")
+                    VALUES (@Autista, @Targa, @RagioneSociale)
+                    RETURNING "ID"
+                    
+                    """;
+                    }
+
+                    int righeInserite = conn.ExecuteScalar<int>(sqlCommand, autistaTarga);
+                    return righeInserite;
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante l'inserimento dell'autista/targa/ragione sociale.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
+        }
+        #endregion
+
+        #region "Metodo per recuperare la lista di autisti/targhe/ragioni sociali"
+        public static List<AutistaTarga> GetAutistiTargheRagioniSociali()
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (isProd)
+                    {
+                        sqlCommand = """
+                    
+                    SELECT * FROM sicurezze."SicurAutistaTarga" ORDER BY "RagioneSociale" ASC, "Autista" ASC
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    SELECT * FROM mezzapesa."SicurAutistaTarga" ORDER BY "RagioneSociale" ASC, "Autista" ASC
+                    
+                    """;
+                    }
+
+                    return conn.Query<AutistaTarga>(sqlCommand).ToList();
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero degli autisti/targhe/ragioni sociali.\nErrore : {ex.Message}";
+                    return null;
+                }
+            }
+        }
+        #endregion
+
+        #region "Metodo per recuperare un singolo autista/targa/ragione sociale"
+        public static AutistaTarga GetAutistaTarga(int ID)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (isProd)
+                    {
+                        sqlCommand = """
+                    
+                    SELECT * FROM sicurezze."SicurAutistaTarga" WHERE "ID" = @ID
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    SELECT * FROM mezzapesa."SicurAutistaTarga " WHERE "ID" = @ID
+                    
+                    """;
+                    }
+
+                    return conn.QueryFirstOrDefault<AutistaTarga>(sqlCommand, new { ID });
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero degli autisti/targhe/ragioni sociali.\nErrore : {ex.Message}";
+                    return null;
+                }
+            }
+        }
+        #endregion
+
+        #region "Metodo per recuperare un singolo autista/targa/ragione sociale"
+        public static int UpadateAutistaTarga(AutistaTarga autistaTarga)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (isProd)
+                    {
+                        sqlCommand = """
+                    
+                    UPDATE FROM sicurezze."SicurAutistaTarga"
+                    SET "Autista" = @Autista, "Targa" = @Targa, "RagioneSociale" = @RagioneSociale
+                    WHERE "ID" = @ID
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    UPDATE 
+                    SET "Autista" = @Autista, "Targa" = @Targa, "RagioneSociale" = @RagioneSociale
+                    FROM mezzapesa."SicurAutistaTarga " WHERE "ID" = @ID
+                    
+                    """;
+                    }
+
+                    return conn.Execute(sqlCommand, autistaTarga);                    
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero degli autisti/targhe/ragioni sociali.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
         }
         #endregion
     }

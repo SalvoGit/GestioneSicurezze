@@ -20,6 +20,7 @@ namespace GestioneSicurezze
         private IReadOnlyList<CodiciEnac> _codiciEnac;
         private IReadOnlyList<CodiciOperatori> _codiciOperatori;
         private IReadOnlyList<SicurClienteCliente> _codiciClienti;
+        private IReadOnlyList<AutistaTarga> _codiciAutisti;
         ModelloXray modelloXray = new ModelloXray();
         public ModificaEntrate(ModelloXray modelloXray, UserSettings userSettings)
         {
@@ -35,6 +36,7 @@ namespace GestioneSicurezze
             LoadCodiciEnac();
             LoadOperatori();
             LoadClienti();
+            LoadAutisti();
             ComboEnac.SelectedValue = _modelloXray.CodiceEnac;
             ComboCliente.SelectedValue = _modelloXray.Cliente;
             ComboOperatori.SelectedValue = _modelloXray.Operatore;
@@ -47,7 +49,9 @@ namespace GestioneSicurezze
             txtRiferimento.Text = _modelloXray.Riferimento ?? String.Empty;
             txtSigilloNumero.Text = _modelloXray.SigilloNumero ?? String.Empty;
             txtRagSocTrasp.Text = _modelloXray.Trasportatore ?? String.Empty;
-            txtAutista.Text = _modelloXray.Autista ?? String.Empty;
+            //txtAutista.Text = _modelloXray.Autista ?? String.Empty;
+            var autistaTarga = _codiciAutisti.FirstOrDefault(a => a.Autista == _modelloXray.Autista);
+            ComboAutista.SelectedValue = autistaTarga?.ID ?? -1;
             txtTarghe.Text = _modelloXray.Targa ?? String.Empty;
             chXray.IsChecked = _modelloXray.XRAY;
             txtQtXray.Text = _modelloXray.QT_XRAY.ToString();
@@ -67,6 +71,19 @@ namespace GestioneSicurezze
             }            
             txtDataOra.Text = _modelloXray.DataEsecuzione.ToString();
             txtAeroporto.Text = _modelloXray.AeroportoDest;
+        }
+
+        private void LoadAutisti()
+        {
+            ComboAutista.ItemsSource = null;
+            _codiciAutisti = DbOperation.GetAutistiTargheRagioniSociali();
+            if (_codiciAutisti == null || _codiciAutisti.Count == 0)
+            {
+                MessageBox.Show("Nessun Autista trovato nel database.\n\nContattare il servizio IT.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            ComboAutista.ItemsSource = _codiciAutisti;
+            ComboAutista.SelectedIndex = -1;
         }
 
         private void LoadCodiciEnac()
@@ -187,7 +204,8 @@ namespace GestioneSicurezze
             modelloXray.Trasportatore = txtRagSocTrasp.Text.ToUpper() ?? string.Empty;
             modelloXray.Targa = txtTarghe.Text.ToUpper() ?? string.Empty;
             modelloXray.SigilloNumero = txtSigilloNumero.Text.ToUpper() ?? string.Empty;
-            modelloXray.Autista = txtAutista.Text.ToUpper() ?? string.Empty;
+            //modelloXray.Autista = txtAutista.Text.ToUpper() ?? string.Empty;
+            modelloXray.Autista = ((AutistaTarga)ComboAutista.SelectedItem)?.Autista ?? string.Empty;
             modelloXray.XRAY = chXray.IsChecked ?? false;
             modelloXray.ETD = chEtd.IsChecked ?? false;
             modelloXray.PHS = chPhs.IsChecked ?? false;
@@ -405,6 +423,21 @@ namespace GestioneSicurezze
                     }
                 }
             }            
+        }
+
+        private void ComboAutista_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1)
+            {
+                var selectedAutista = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
+                txtTarghe.Text = selectedAutista?.Targa ?? string.Empty;
+                txtRagSocTrasp.Text = selectedAutista?.RagioneSociale ?? string.Empty;
+            }
+            else
+            {
+                txtTarghe.Text = string.Empty;
+                txtRagSocTrasp.Text = string.Empty;
+            }
         }
     }
 }

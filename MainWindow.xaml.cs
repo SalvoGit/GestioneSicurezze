@@ -1,4 +1,5 @@
-﻿using GestioneSicurezze.Models;
+﻿using GestioneSicurezze.AutistiTarghe;
+using GestioneSicurezze.Models;
 using PdfiumViewer;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -21,6 +22,7 @@ namespace GestioneSicurezze
         private IReadOnlyList<CodiciEnac> _codiciEnac;
         private IReadOnlyList<CodiciOperatori> _codiciOperatori;
         private IReadOnlyList<SicurClienteCliente> _codiciClienti;
+        private IReadOnlyList<AutistaTarga> _codiciAutisti;
 
         ObservableCollection<ModelloXray> ultimiInserimenti = new ObservableCollection<ModelloXray>();
         UserSettings _userSettings;
@@ -78,7 +80,8 @@ namespace GestioneSicurezze
             modelloXray.Trasportatore = txtRagSocTrasp.Text.ToUpper() ?? string.Empty;
             modelloXray.Targa = txtTarghe.Text.ToUpper() ?? string.Empty;
             modelloXray.SigilloNumero = txtSigilloNumero.Text.ToUpper() ?? string.Empty;
-            modelloXray.Autista = txtAutista.Text.ToUpper() ?? string.Empty;
+            //modelloXray.Autista = txtAutista.Text.ToUpper() ?? string.Empty;
+            modelloXray.Autista = ((AutistaTarga)ComboAutista.SelectedItem)?.Autista ?? string.Empty;
             modelloXray.XRAY = chXray.IsChecked ?? false;
             modelloXray.ETD = chEtd.IsChecked ?? false;
             modelloXray.PHS = chPhs.IsChecked ?? false;
@@ -243,7 +246,8 @@ namespace GestioneSicurezze
             txtRagSocTrasp.Clear();
             txtTarghe.Clear();
             txtSigilloNumero.Clear();
-            txtAutista.Clear();
+            //txtAutista.Clear();
+            ComboAutista.SelectedIndex = -1;
             chXray.IsChecked = true;
             chEtd.IsChecked = false;
             chPhs.IsChecked = false;
@@ -406,6 +410,7 @@ namespace GestioneSicurezze
             LoadCodiciEnac();
             LoadOperatori();
             LoadClienti();
+            LoadAutisti();
             SetDefaultSettings();
         }
         private void SetDefaultSettings()
@@ -464,6 +469,18 @@ namespace GestioneSicurezze
             ComboCliente.ItemsSource = _codiciClienti;
             ComboCliente.SelectedIndex = 0;
         }
+        private void LoadAutisti()
+        {
+            ComboAutista.ItemsSource = null;
+            _codiciAutisti = DbOperation.GetAutistiTargheRagioniSociali();
+            if (_codiciAutisti == null || _codiciAutisti.Count == 0)
+            {
+                MessageBox.Show("Nessun Autista trovato nel database.\n\nContattare il servizio IT.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            ComboAutista.ItemsSource = _codiciAutisti;
+            ComboAutista.SelectedIndex = -1;
+        }
         private void AggiornaListaOperatori(object sender, RoutedEventArgs e)
         {
             LoadOperatori();
@@ -500,6 +517,12 @@ namespace GestioneSicurezze
             NuovoCliente nuovoClienteWindow = new NuovoCliente();
             nuovoClienteWindow.ShowDialog();
             LoadClienti();
+        }
+        private void NuovoAutistaButton_Click(object sender, RoutedEventArgs e)
+        {
+            NuovoAutista nuovoAutistaWindow = new NuovoAutista();
+            nuovoAutistaWindow.ShowDialog();
+            LoadAutisti();
         }
         private void Modifica_Click(object sender, RoutedEventArgs e)
         {
@@ -571,6 +594,20 @@ namespace GestioneSicurezze
         {
             Sigilli sigilli = new Sigilli();
             sigilli.ShowDialog();
+        }
+
+        private void ComboAutista_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1){
+                var selectedAutista = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
+                txtTarghe.Text = selectedAutista?.Targa ?? string.Empty;
+                txtRagSocTrasp.Text = selectedAutista?.RagioneSociale ?? string.Empty;
+            }
+            else
+            {
+                txtTarghe.Text = string.Empty;
+                txtRagSocTrasp.Text = string.Empty;
+            }
         }
     }
 }
