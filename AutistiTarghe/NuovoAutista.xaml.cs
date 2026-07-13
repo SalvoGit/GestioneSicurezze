@@ -41,6 +41,22 @@ namespace GestioneSicurezze.AutistiTarghe
             {
                 try
                 {
+                    int targaCheck = DbOperation.VerificaTarga(autistaTarga.Targa);
+                    if (targaCheck > 0)
+                    {
+                        MessageBoxResult messageBoxResult = MessageBox.Show("La targa inserita è già presente nel database.\n Si desidera comunque procedere con il salvataggio?", "Warning",
+                            MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageBoxResult == MessageBoxResult.No)
+                        {
+                            return;
+                        }
+                    }
+                    else if (targaCheck == -1)
+                    {
+                        MessageBox.Show("Errore durante il salvataggio dei dati: " + DbOperation.messageError, "Error",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
                     int returnedID = DbOperation.InsertNewAutistaTarga(autistaTarga);
                     if (returnedID > 0)
                     {

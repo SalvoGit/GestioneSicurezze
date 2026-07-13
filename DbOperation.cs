@@ -9,12 +9,12 @@ namespace GestioneSicurezze
     public class DbOperation
     {
         /************* CONNESSIONE AL DATABASE SVILUPPO*************/
-        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbSviluppo"].ConnectionString;
-        private static readonly bool isProd = false;
+        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbSviluppo"].ConnectionString;
+        //private static readonly bool isProd = false;
 
         /************* CONNESSIONE AL DATABASE PRODUZIONE*************/
-        //private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
-        //private static readonly bool isProd = true;
+        private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["GestioneSicurezzeDbProd"].ConnectionString;
+        private static readonly bool isProd = true;
 
         public static IDbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
         public static string messageError = string.Empty;
@@ -1113,6 +1113,44 @@ namespace GestioneSicurezze
                     }
 
                     return conn.Execute(sqlCommand, autistaTarga);                    
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante il recupero degli autisti/targhe/ragioni sociali.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
+        }
+        #endregion
+
+        #region "Metodo per controllora se una targa è già presente"
+        public static int VerificaTarga(string targa)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (isProd)
+                    {
+                        sqlCommand = """
+                    
+                    SELECT COUNT(*) FROM sicurezze."SicurAutistaTarga" WHERE "Targa" = @Targa
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    SELECT COUNT(*) FROM mezzapesa."SicurAutistaTarga" WHERE "Targa" = @Targa
+                    
+                    
+                    """;
+                    }
+
+                    return conn.QueryFirstOrDefault<int>(sqlCommand, new { Targa = targa });
                 }
                 catch (Exception ex)
                 {
