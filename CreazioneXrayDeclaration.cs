@@ -15,9 +15,10 @@ namespace GestioneSicurezze
         string backGroundColor = "#F2F2F2";
         string verdana = "Verdana";
         string ImageDir = AppDomain.CurrentDomain.BaseDirectory;
+        string computerName = Environment.MachineName;
         public CreazioneXrayDeclaration(ModelloXray modelloXray)
         {
-            this.modelloXray = modelloXray;
+            this.modelloXray = modelloXray;            
         }
         
         // Funzione helper (chiamala una volta)
@@ -29,14 +30,25 @@ namespace GestioneSicurezze
             stream.CopyTo(memoryStream);
             return memoryStream.ToArray();
         }
-        public void Compose(IDocumentContainer container)
+
+        public DocumentMetadata GetMetadata()
         {
-            container
+            return new DocumentMetadata
+            {
+                Title = "Dichiarazione di Sicurezza della Spedizione di Merce",
+                Author = $"Autotrasporti Mezzapesa Massimiliano Srl - {computerName}",
+                Subject = "Dichiarazione di Sicurezza della Spedizione di Merce",                
+            };
+        }
+        public void Compose(IDocumentContainer container)
+        {            
+             container
             .Page(page =>
             {
                 page.MarginHorizontal(.5f, Unit.Centimetre);
                 page.MarginVertical(.5f, Unit.Centimetre);
                 page.Size(pageSize: PageSizes.A4);
+
 
                 page.Header().AlignCenter().Element(ComposeHeader);
                 page.Content().PaddingTop(.5f, Unit.Millimetre).Element(ComposeContent);

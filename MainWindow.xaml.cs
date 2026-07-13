@@ -167,7 +167,7 @@ namespace GestioneSicurezze
                     /*********************************************************************************************/
 
                     txtProgressivo.Text = modelloXray.Progressivo.ToString();
-                    CreazioneXrayDeclaration creazioneXray = new CreazioneXrayDeclaration(modelloXray);
+                    CreazioneXrayDeclaration creazioneXray = new CreazioneXrayDeclaration(modelloXray);                       
                     string nomeFile = $"{modelloXray.Progressivo}_{modelloXray.Cliente.Replace(" ", "_")}_{modelloXray.Awb}.pdf";
                     creazioneXray.GeneratePdf(Path.Combine(_userSettings.SavePath, nomeFile));
                     //int idGenerato = SalvaSicurezza(modelloXray);
