@@ -10,6 +10,11 @@
     <ApplicationIcon>Immagini\Logo.ico</ApplicationIcon>
   </PropertyGroup>
 
+	<ItemGroup>
+		<ApplicationDefinition Remove="App.xaml" />
+		<Page Include="App.xaml" />
+	</ItemGroup>
+	
   <ItemGroup>
     <None Remove="Immagini\BottomImage.png" />
     <None Remove="Immagini\IndirizzoLiscateImage.png" />
@@ -37,6 +42,7 @@
     <PackageReference Include="PdfiumViewer.Updated" Version="2.14.5" />
     <PackageReference Include="QuestPDF" Version="2026.2.3" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.5" />
+    <PackageReference Include="Velopack" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

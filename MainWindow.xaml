@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Mezzapesa - Gestione Sicurezze" Background="#F7F8E2"        
-        WindowStartupLocation="CenterScreen" WindowState="Maximized" Loaded="Window_Loaded" Icon="/Immagini/Logo.png">
+        WindowStartupLocation="CenterScreen" WindowState="Maximized" Loaded="Window_Loaded" Icon="/Immagini/Logo.png" Closing="Window_Closing">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -362,12 +362,13 @@
                     Grid.Column="1" Grid.Row="14" Grid.ColumnSpan="4">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="SaveButton" Click="Save" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5">Salva</Button>
-                    <Button x:Name="SearchButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="SearchButton_Click" Margin="5">Ricerca Sicurezza</Button>                    
+                    <Button x:Name="SearchButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="SearchButton_Click" Margin="5">Ricerca Sicurezza</Button>
                     <Button x:Name="NuoOpButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="InsertNuovoOperatore" Margin="5">Nuovo Operatore</Button>
                     <Button x:Name="NuovoClienteButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="NuovoClienteButton_Click" Margin="5">Nuovo Cliente</Button>
                     <Button x:Name="NuovoAutistaButton" Style="{DynamicResource ButtonStyle}" Width="175" Click="NuovoAutistaButton_Click" Margin="5">Nuovo Autista/Targa</Button>
                     <Button x:Name="SettingsButton" Click="OpenSettings" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5">Settings</Button>
-                    <Button x:Name="SigilliButton" Visibility="Hidden" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5" Click="SigilliButton_Click">Sigilli</Button>
+                    <Button x:Name="UpdateButton" IsEnabled="False" Visibility="Collapsed" Style="{DynamicResource UpdateStyle}" Width="200" Margin="5" Click="UpdateButton_Click">Installa Aggiornamenti</Button>
+                    <!--<Button x:Name="SigilliButton" Visibility="Hidden" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5" Click="SigilliButton_Click">Sigilli</Button>-->
                 </StackPanel>
             </Border>
             <!--#endregion-->

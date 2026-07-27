@@ -1,5 +1,6 @@
 ﻿using GestioneSicurezze.AutistiTarghe;
 using GestioneSicurezze.Models;
+using GestioneSicurezze.VelopackService;
 using PdfiumViewer;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -19,6 +20,7 @@ namespace GestioneSicurezze
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly VelopackUpdateService _updateService;
         private IReadOnlyList<CodiciEnac> _codiciEnac;
         private IReadOnlyList<CodiciOperatori> _codiciOperatori;
         private IReadOnlyList<SicurClienteCliente> _codiciClienti;
@@ -30,6 +32,11 @@ namespace GestioneSicurezze
         public MainWindow()
         {            
             InitializeComponent();
+
+            // Inizializza il servizio puntando alla directory o all'URL di rilascio.
+            // Sostituisci questo percorso con quello effettivo della tua distribuzione.
+            _updateService = new VelopackUpdateService(@"\\192.168.1.5\Applicazioni\Rilascio_Software\Gestione_Sicurezze\Pubblica");
+
             LoadSettings();            
             QuestPDF.Settings.License = LicenseType.Community;
             lis_UltimiInseriti.ItemsSource = ultimiInserimenti;
@@ -405,8 +412,18 @@ namespace GestioneSicurezze
         {
             LoadCodiciEnac();
         }
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {            
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Avvia il controllo e il download in background senza bloccare la UI
+            bool hasUpdateReady = await _updateService.PrepareUpdateAsync();
+            // Se è stato trovato e scaricato un aggiornamento, rendi operativo il bottone
+            //hasUpdateReady = true;
+            if (hasUpdateReady)
+            {
+                UpdateButton.Visibility = Visibility.Visible;
+                UpdateButton.IsEnabled = true;
+            }
+
             LoadCodiciEnac();
             LoadOperatori();
             LoadClienti();
@@ -598,7 +615,7 @@ namespace GestioneSicurezze
 
         private void ComboAutista_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1){
+            if (ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1){
                 var selectedAutista = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
                 txtTarghe.Text = selectedAutista?.Targa ?? string.Empty;
                 txtRagSocTrasp.Text = selectedAutista?.RagioneSociale ?? string.Empty;
@@ -607,6 +624,23 @@ namespace GestioneSicurezze
             {
                 txtTarghe.Text = string.Empty;
                 txtRagSocTrasp.Text = string.Empty;
+            }
+        }
+
+        private void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            //MessageBox.Show("CLIC");
+            // L'utente vuole aggiornare ORA. Applica e riavvia l'app.
+            _updateService.ApplicaERiavvia();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Se c'è un aggiornamento pronto ma l'utente non ha cliccato il bottone,
+            // installalo silenziosamente mentre l'app si sta chiudendo.
+            if (_updateService.IsUpdateReady)
+            {
+                _updateService.ApplicaSuChiusura();
             }
         }
     }
