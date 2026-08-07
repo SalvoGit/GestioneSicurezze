@@ -22,6 +22,7 @@ namespace GestioneSicurezze
         private IReadOnlyList<SicurClienteCliente> _codiciClienti;
         private IReadOnlyList<AutistaTarga> _codiciAutisti;
         ModelloXray modelloXray = new ModelloXray();
+        private string autistaDaInserire = string.Empty;
         public ModificaEntrate(ModelloXray modelloXray, UserSettings userSettings)
         {
             InitializeComponent();
@@ -51,7 +52,14 @@ namespace GestioneSicurezze
             txtRagSocTrasp.Text = _modelloXray.Trasportatore ?? String.Empty;
             //txtAutista.Text = _modelloXray.Autista ?? String.Empty;
             var autistaTarga = _codiciAutisti.FirstOrDefault(a => a.Autista == _modelloXray.Autista);
-            ComboAutista.SelectedValue = autistaTarga?.ID ?? -1;
+            if(autistaTarga != null)
+            {
+                ComboAutista.SelectedValue = autistaTarga?.ID ?? -1;
+            }
+            else
+            {
+                ComboAutista.Text = _modelloXray.Autista ?? String.Empty;
+            }
             txtTarghe.Text = _modelloXray.Targa ?? String.Empty;
             chXray.IsChecked = _modelloXray.XRAY;
             txtQtXray.Text = _modelloXray.QT_XRAY.ToString();
@@ -205,7 +213,8 @@ namespace GestioneSicurezze
             modelloXray.Targa = txtTarghe.Text.ToUpper() ?? string.Empty;
             modelloXray.SigilloNumero = txtSigilloNumero.Text.ToUpper() ?? string.Empty;
             //modelloXray.Autista = txtAutista.Text.ToUpper() ?? string.Empty;
-            modelloXray.Autista = ((AutistaTarga)ComboAutista.SelectedItem)?.Autista ?? string.Empty;
+            //modelloXray.Autista = ((AutistaTarga)ComboAutista.SelectedItem)?.Autista ?? string.Empty;
+            modelloXray.Autista = autistaDaInserire;
             modelloXray.XRAY = chXray.IsChecked ?? false;
             modelloXray.ETD = chEtd.IsChecked ?? false;
             modelloXray.PHS = chPhs.IsChecked ?? false;
@@ -424,20 +433,52 @@ namespace GestioneSicurezze
                 }
             }            
         }
-
-        private void ComboAutista_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ComboAutista_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1)
+            AnalizzaValore();
+        }
+        private void AnalizzaValore()
+        {
+            if (ComboAutista.SelectedItem is AutistaTarga selectedAutista)
             {
-                var selectedAutista = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
-                txtTarghe.Text = selectedAutista?.Targa ?? string.Empty;
-                txtRagSocTrasp.Text = selectedAutista?.RagioneSociale ?? string.Empty;
+                if (ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1)
+                {
+                    var autistaScelto = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
+                    txtTarghe.Text = autistaScelto?.Targa ?? string.Empty;
+                    txtRagSocTrasp.Text = autistaScelto?.RagioneSociale ?? string.Empty;
+                    autistaDaInserire = autistaScelto?.Autista ?? string.Empty;
+                }
             }
             else
             {
-                txtTarghe.Text = string.Empty;
-                txtRagSocTrasp.Text = string.Empty;
+                string testoInserito = ComboAutista.Text.Trim().ToUpper();
+                if (!string.IsNullOrEmpty(testoInserito))
+                {
+                    autistaDaInserire = testoInserito;
+                    var autista = _codiciAutisti.FirstOrDefault(a => a.Autista.Equals(testoInserito, StringComparison.OrdinalIgnoreCase));
+                    if (autista == null)
+                    {
+                        txtTarghe.Text = string.Empty;
+                        txtRagSocTrasp.Text = string.Empty;
+                    }
+                }
             }
+        }
+
+        private void ComboAutista_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //if (ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1)
+            //{
+            //    var selectedAutista = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
+            //    txtTarghe.Text = selectedAutista?.Targa ?? string.Empty;
+            //    txtRagSocTrasp.Text = selectedAutista?.RagioneSociale ?? string.Empty;
+            //}
+            //else
+            //{
+            //    txtTarghe.Text = string.Empty;
+            //    txtRagSocTrasp.Text = string.Empty;
+            //}
+            AnalizzaValore();
         }
     }
 }

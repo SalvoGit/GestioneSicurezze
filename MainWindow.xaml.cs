@@ -25,7 +25,7 @@ namespace GestioneSicurezze
         private IReadOnlyList<CodiciOperatori> _codiciOperatori;
         private IReadOnlyList<SicurClienteCliente> _codiciClienti;
         private IReadOnlyList<AutistaTarga> _codiciAutisti;
-
+        private string autistaDaInserire = string.Empty;
         ObservableCollection<ModelloXray> ultimiInserimenti = new ObservableCollection<ModelloXray>();
         UserSettings _userSettings;
         //string SavePath = @"C:\Sviluppo\Sicurezze";
@@ -88,7 +88,8 @@ namespace GestioneSicurezze
             modelloXray.Targa = txtTarghe.Text.ToUpper() ?? string.Empty;
             modelloXray.SigilloNumero = txtSigilloNumero.Text.ToUpper() ?? string.Empty;
             //modelloXray.Autista = txtAutista.Text.ToUpper() ?? string.Empty;
-            modelloXray.Autista = ((AutistaTarga)ComboAutista.SelectedItem)?.Autista ?? string.Empty;
+            //modelloXray.Autista = ((AutistaTarga)ComboAutista.SelectedItem)?.Autista ?? string.Empty;
+            modelloXray.Autista = autistaDaInserire;
             modelloXray.XRAY = chXray.IsChecked ?? false;
             modelloXray.ETD = chEtd.IsChecked ?? false;
             modelloXray.PHS = chPhs.IsChecked ?? false;
@@ -615,15 +616,47 @@ namespace GestioneSicurezze
 
         private void ComboAutista_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1){
-                var selectedAutista = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
-                txtTarghe.Text = selectedAutista?.Targa ?? string.Empty;
-                txtRagSocTrasp.Text = selectedAutista?.RagioneSociale ?? string.Empty;
+            //if (ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1){
+            //    var selectedAutista = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
+            //    txtTarghe.Text = selectedAutista?.Targa ?? string.Empty;
+            //    txtRagSocTrasp.Text = selectedAutista?.RagioneSociale ?? string.Empty;
+            //}
+            //else
+            //{
+            //    txtTarghe.Text = string.Empty;
+            //    txtRagSocTrasp.Text = string.Empty;
+            //}
+            AnalizzaValore();
+        }
+        private void ComboAutista_LostFocus(object sender, RoutedEventArgs e)
+        {
+            AnalizzaValore();
+        }
+        private void AnalizzaValore()
+        {
+            if(ComboAutista.SelectedItem is AutistaTarga selectedAutista)
+            {
+                if (ComboAutista.SelectedValue != null && (int)ComboAutista.SelectedValue != -1)
+                {
+                    var autistaScelto = _codiciAutisti.FirstOrDefault(a => a.ID == (int)ComboAutista.SelectedValue);
+                    txtTarghe.Text = autistaScelto?.Targa ?? string.Empty;
+                    txtRagSocTrasp.Text = autistaScelto?.RagioneSociale ?? string.Empty;
+                    autistaDaInserire = autistaScelto?.Autista ?? string.Empty;
+                }                
             }
             else
             {
-                txtTarghe.Text = string.Empty;
-                txtRagSocTrasp.Text = string.Empty;
+                string testoInserito = ComboAutista.Text.Trim().ToUpper();
+                if (!string.IsNullOrEmpty(testoInserito))
+                {
+                    autistaDaInserire = testoInserito;
+                    var autista = _codiciAutisti.FirstOrDefault(a => a.Autista.Equals(testoInserito, StringComparison.OrdinalIgnoreCase));
+                    if (autista == null)
+                    {
+                        txtTarghe.Text = string.Empty;
+                        txtRagSocTrasp.Text = string.Empty;
+                    }                    
+                }
             }
         }
 
@@ -642,6 +675,6 @@ namespace GestioneSicurezze
             {
                 _updateService.ApplicaSuChiusura();
             }
-        }
+        }        
     }
 }
