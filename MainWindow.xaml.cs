@@ -1,6 +1,7 @@
 ﻿using GestioneSicurezze.AutistiTarghe;
 using GestioneSicurezze.Models;
 using GestioneSicurezze.VelopackService;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using PdfiumViewer;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -62,8 +63,25 @@ namespace GestioneSicurezze
         }
         private void Save(object sender, RoutedEventArgs e)
         {
-            var model = _userSettings;
             ModelloXray modelloXray = new ModelloXray();
+            modelloXray = CreaModello(modelloXray);
+            bool continua = VerificaInput(modelloXray);
+            if (continua)
+            {
+                try
+                {
+                    string nomeFile = SaveDbGeneratePDF(modelloXray);
+                    CaricaUltimi10(modelloXray.Operatore);
+                    ClearCampi();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Errore durante la creazione del documento PDF: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        private ModelloXray CreaModello(ModelloXray modelloXray)
+        {
             modelloXray.NrEntrata = txtEntrata.Text.ToUpper() ?? string.Empty;
             modelloXray.CodiceEnac = ComboEnac.SelectedValue?.ToString() ?? string.Empty;
             modelloXray.Operatore = ComboOperatori.SelectedValue?.ToString() ?? string.Empty;
@@ -71,7 +89,7 @@ namespace GestioneSicurezze
             modelloXray.Awb = txtAwb.Text.ToUpper();
             modelloXray.Colli = txtColli.Text.ToUpper();
 
-            if (txtPeso.Text.Contains(".")) 
+            if (txtPeso.Text.Contains("."))
             {
                 modelloXray.Peso = txtPeso.Text.Replace(".", ",").ToUpper();
             }
@@ -80,7 +98,7 @@ namespace GestioneSicurezze
                 modelloXray.Peso = txtPeso.Text.ToUpper();
             }
 
-             
+
             modelloXray.Destinazione = txtDestinazione.Text.ToUpper();
             modelloXray.Contenuto = txtContenuto.Text.ToUpper();
             modelloXray.Riferimento = txtRiferimento.Text.ToUpper() ?? string.Empty;
@@ -94,11 +112,11 @@ namespace GestioneSicurezze
             modelloXray.ETD = chEtd.IsChecked ?? false;
             modelloXray.PHS = chPhs.IsChecked ?? false;
             modelloXray.VCK = chVck.IsChecked ?? false;
-            if(rbSpx.IsChecked == true)
+            if (rbSpx.IsChecked == true)
             {
                 modelloXray.STATOMERCE = "SPX";
             }
-            else if(rbShr.IsChecked == true)
+            else if (rbShr.IsChecked == true)
             {
                 modelloXray.STATOMERCE = "SHR";
             }
@@ -126,77 +144,91 @@ namespace GestioneSicurezze
             {
                 modelloXray.QT_ETD = 0;
             }
-            
+
 
             modelloXray.DataEsecuzione = DateTime.Now;
             modelloXray.AeroportoDest = txtAeroporto.Text.ToUpper() ?? string.Empty;
 
+            return modelloXray;
+        }
+        private string SaveDbGeneratePDF(ModelloXray modelloXray)
+        {
+            /************** MODIFICA DEL 23/03/2026 *****************/
+            //modelloXray.Progressivo = DbOperation.GetNextProgressivo();
+            //if (modelloXray.Progressivo == -1)
+            //{
+            //    string messaggioErrore = DbOperation.GetErrorMessage;
+            //    MessageBox.Show($"Errore durante il recupero del Progressivo.\n\nContattare il servizio IT.\n\nErrore: {messaggioErrore}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    return;
+            //}
+            /*******************************************************/
+
+
+            /**************VERIFICO SE L'AWB E' GIA' STATO INSERITO NELLA MEZZ'ORA PRECEDENTE *****************/
+            MessageBoxResult sceltaOperatore;
+
+            if (DbOperation.ThirtyMinutesCheck(modelloXray.Awb))
+            {
+                sceltaOperatore = MessageBox.Show($"L'AWB {modelloXray.Awb} è già stato inserito nel database nella mezz'ora precedente.\n\nSi desidera procedere comunque all'inserimento?",
+                    "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (sceltaOperatore == MessageBoxResult.No)
+                {
+                    return string.Empty;
+                }
+            }
+            /******************************************************************************************************/
+
+            /****** ******** MODIFICA DEL 23/03/2026 PER LA GESTIONE DEI CONFLICTS NEL DB *****************/
+            DBResult risultato = DbOperation.InsertSicurezzaDBNoProg(modelloXray);
+            if (risultato.ID == -1)
+            {
+                string messaggioErrore = DbOperation.GetErrorMessage;
+                MessageBox.Show($"Errore durante il salvataggio della sicurezza nel database.\n\nContattare il servizio IT.\n\nErrore: {messaggioErrore}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return string.Empty;
+            }
+            modelloXray.ID = risultato.ID;
+            modelloXray.Progressivo = risultato.PROGRESSIVO;
+            /*********************************************************************************************/
+
+            txtProgressivo.Text = modelloXray.Progressivo.ToString();
+            CreazioneXrayDeclaration creazioneXray = new CreazioneXrayDeclaration(modelloXray);
+            string nomeFile = $"{modelloXray.Progressivo}_{modelloXray.Cliente.Replace(" ", "_")}_{modelloXray.Awb}.pdf";
+            creazioneXray.GeneratePdf(Path.Combine(_userSettings.SavePath, nomeFile));
+            return nomeFile;
+            //int idGenerato = SalvaSicurezza(modelloXray);
+            //modelloXray.ID = idGenerato;
+
+            /******** MODIFICA PER LA GESTIONE DEI CONFLICTS NEL DB ********/
+            //DBResult esitoOperazione = DbOperation.InsertSicurezzaWithConflictDB(modelloXray);
+            //if(esitoOperazione.ID == -1)
+            //{
+            //    string messaggioErrore = DbOperation.GetErrorMessage;
+            //    MessageBox.Show($"Errore durante il salvataggio della sicurezza nel database.\n\nContattare il servizio IT.\n\nErrore: {messaggioErrore}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    return;
+            //}
+            //modelloXray.ID = esitoOperazione.ID;
+            //modelloXray.Progressivo = esitoOperazione.PROGRESSIVO;
+            /***************************************************************/
+        }
+        private void SavePrint(object sender, RoutedEventArgs e)
+        {
+            var model = _userSettings;
+            ModelloXray modelloXray = new ModelloXray();
+            modelloXray = CreaModello(modelloXray);
             bool continua = VerificaInput(modelloXray);
 
             if (continua)
             {
                 try
                 {
-                    /************** MODIFICA DEL 23/03/2026 *****************/
-                    //modelloXray.Progressivo = DbOperation.GetNextProgressivo();
-                    //if (modelloXray.Progressivo == -1)
-                    //{
-                    //    string messaggioErrore = DbOperation.GetErrorMessage;
-                    //    MessageBox.Show($"Errore durante il recupero del Progressivo.\n\nContattare il servizio IT.\n\nErrore: {messaggioErrore}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    //    return;
-                    //}
-                    /*******************************************************/
+                    string nomeFile = SaveDbGeneratePDF(modelloXray);
 
-
-                    /**************VERIFICO SE L'AWB E' GIA' STATO INSERITO NELLA MEZZ'ORA PRECEDENTE *****************/
-                    MessageBoxResult sceltaOperatore;
-
-                    if(DbOperation.ThirtyMinutesCheck(modelloXray.Awb))
+                    if(!string.IsNullOrEmpty(nomeFile))
                     {
-                        sceltaOperatore = MessageBox.Show($"L'AWB {modelloXray.Awb} è già stato inserito nel database nella mezz'ora precedente.\n\nSi desidera procedere comunque all'inserimento?",
-                            "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                        if (sceltaOperatore == MessageBoxResult.No)
-                        {
-                            return;
-                        }
-                    }
-                    /******************************************************************************************************/
-
-                    /****** ******** MODIFICA DEL 23/03/2026 PER LA GESTIONE DEI CONFLICTS NEL DB *****************/
-                    DBResult risultato = DbOperation.InsertSicurezzaDBNoProg(modelloXray);
-                    if (risultato.ID == -1)
-                    {
-                        string messaggioErrore = DbOperation.GetErrorMessage;
-                        MessageBox.Show($"Errore durante il salvataggio della sicurezza nel database.\n\nContattare il servizio IT.\n\nErrore: {messaggioErrore}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    modelloXray.ID = risultato.ID;
-                    modelloXray.Progressivo = risultato.PROGRESSIVO;
-                    /*********************************************************************************************/
-
-                    txtProgressivo.Text = modelloXray.Progressivo.ToString();
-                    CreazioneXrayDeclaration creazioneXray = new CreazioneXrayDeclaration(modelloXray);
-                    string nomeFile = $"{modelloXray.Progressivo}_{modelloXray.Cliente.Replace(" ", "_")}_{modelloXray.Awb}.pdf";
-                    creazioneXray.GeneratePdf(Path.Combine(_userSettings.SavePath, nomeFile));
-                    //int idGenerato = SalvaSicurezza(modelloXray);
-                    //modelloXray.ID = idGenerato;
-                    
-                    /******** MODIFICA PER LA GESTIONE DEI CONFLICTS NEL DB ********/
-                    //DBResult esitoOperazione = DbOperation.InsertSicurezzaWithConflictDB(modelloXray);
-                    //if(esitoOperazione.ID == -1)
-                    //{
-                    //    string messaggioErrore = DbOperation.GetErrorMessage;
-                    //    MessageBox.Show($"Errore durante il salvataggio della sicurezza nel database.\n\nContattare il servizio IT.\n\nErrore: {messaggioErrore}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    //    return;
-                    //}
-                    //modelloXray.ID = esitoOperazione.ID;
-                    //modelloXray.Progressivo = esitoOperazione.PROGRESSIVO;
-                    /***************************************************************/
-
-                    StampaFile(Path.Combine(_userSettings.SavePath, nomeFile));
-
-                    CaricaUltimi10(modelloXray.Operatore);
-                    ClearCampi();
+                        StampaFile(Path.Combine(_userSettings.SavePath, nomeFile));
+                        CaricaUltimi10(modelloXray.Operatore);
+                        ClearCampi();
+                    }                    
                 }
                 catch (Exception ex)
                 {

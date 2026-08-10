@@ -382,7 +382,10 @@
             <Border Style="{StaticResource BorderStyle}"
                     Grid.Column="1" Grid.Row="14" Grid.ColumnSpan="4">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="SaveButton" Click="Save" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5">Salva</Button>
+                    <Button x:Name="SaveOnlyButton" Click="Save" Style="{DynamicResource ButtonStyle}" Width="150"
+                            Margin="5">Salva</Button>
+                    <Button x:Name="SaveButton" Click="SavePrint" Style="{DynamicResource ButtonStyle}" Width="150"
+                            Margin="5">Salva + Stampa</Button>
                     <Button x:Name="SearchButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="SearchButton_Click" Margin="5">Ricerca Sicurezza</Button>
                     <Button x:Name="NuoOpButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="InsertNuovoOperatore" Margin="5">Nuovo Operatore</Button>
                     <Button x:Name="NuovoClienteButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="NuovoClienteButton_Click" Margin="5">Nuovo Cliente</Button>
