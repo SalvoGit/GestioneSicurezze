@@ -657,6 +657,12 @@ namespace GestioneSicurezze
                         txtRagSocTrasp.Text = string.Empty;
                     }                    
                 }
+                else
+                {
+                    autistaDaInserire = string.Empty;
+                    //txtTarghe.Text = string.Empty;
+                    //txtRagSocTrasp.Text = string.Empty;
+                }
             }
         }
 
