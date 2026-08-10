@@ -35,7 +35,7 @@ namespace GestioneSicurezze
 
             // Inizializza il servizio puntando alla directory o all'URL di rilascio.
             // Sostituisci questo percorso con quello effettivo della tua distribuzione.
-            _updateService = new VelopackUpdateService(@"\\192.168.1.5\Applicazioni\Rilascio_Software\Gestione_Sicurezze\Pubblica");
+            _updateService = new VelopackUpdateService(@"\\192.168.1.5\Applicazioni\Rilascio_Software\Gestione_Sicurezze\Pubblica_Auto_Update");
 
             LoadSettings();            
             QuestPDF.Settings.License = LicenseType.Community;

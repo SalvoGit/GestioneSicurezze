@@ -286,10 +286,11 @@ namespace GestioneSicurezze
                 }
 
                 creazioneXray.GeneratePdf(Path.Combine(_userSettings.SavePath, nomeFile));
+                string newFilePath = Path.Combine(_userSettings.SavePath, nomeFile);
 
                 if (ristampaFile)
                 {
-                    StampaFile(filePath);
+                    StampaFile(newFilePath);
                 }                
             }
             catch (Exception ex)
