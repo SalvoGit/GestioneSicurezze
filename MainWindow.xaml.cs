@@ -288,6 +288,8 @@ namespace GestioneSicurezze
             txtSigilloNumero.Clear();
             //txtAutista.Clear();
             ComboAutista.SelectedIndex = -1;
+            ComboAutista.Text = string.Empty;
+            autistaDaInserire = string.Empty;
             chXray.IsChecked = true;
             chEtd.IsChecked = false;
             chPhs.IsChecked = false;
