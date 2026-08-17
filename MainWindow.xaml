@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:GestioneSicurezze"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
+        x:Name="MainWd"
         Title="Mezzapesa - Gestione Sicurezze" Background="#F7F8E2"        
         WindowStartupLocation="CenterScreen" WindowState="Maximized" Loaded="Window_Loaded" Icon="/Immagini/Logo.png" Closing="Window_Closing">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">

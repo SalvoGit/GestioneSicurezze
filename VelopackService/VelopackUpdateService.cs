@@ -73,5 +73,13 @@ namespace GestioneSicurezze.VelopackService
                 _updateManager.ApplyUpdatesAndExit(_pendingUpdate);
             }
         }
+        /// <summary>
+        /// Restituisce la versione corrente dell'applicazione.
+        /// </summary>
+        public string GetCurrentVersion()
+        {
+            var v = _updateManager.CurrentVersion;            
+            return v?.ToFullString() ?? string.Empty;
+        }
     }
 }

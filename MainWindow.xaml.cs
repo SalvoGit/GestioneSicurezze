@@ -464,6 +464,7 @@ namespace GestioneSicurezze
             LoadClienti();
             LoadAutisti();
             SetDefaultSettings();
+            MainWd.Title += $" - {_updateService.GetCurrentVersion()}";
         }
         private void SetDefaultSettings()
         {
