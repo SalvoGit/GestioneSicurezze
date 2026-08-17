@@ -1082,7 +1082,7 @@ namespace GestioneSicurezze
         }
         #endregion
 
-        #region "Metodo per recuperare un singolo autista/targa/ragione sociale"
+        #region "Metodo per aggiornare un singolo autista/targa/ragione sociale"
         public static int UpadateAutistaTarga(AutistaTarga autistaTarga)
         {
             using (IDbConnection conn = CreateConnection())
@@ -1095,7 +1095,7 @@ namespace GestioneSicurezze
                     {
                         sqlCommand = """
                     
-                    UPDATE FROM sicurezze."SicurAutistaTarga"
+                    UPDATE sicurezze."SicurAutistaTarga"
                     SET "Autista" = @Autista, "Targa" = @Targa, "RagioneSociale" = @RagioneSociale
                     WHERE "ID" = @ID
                     
@@ -1105,9 +1105,9 @@ namespace GestioneSicurezze
                     {
                         sqlCommand = """
                     
-                    UPDATE 
+                    UPDATE mezzapesa."SicurAutistaTarga"
                     SET "Autista" = @Autista, "Targa" = @Targa, "RagioneSociale" = @RagioneSociale
-                    FROM mezzapesa."SicurAutistaTarga " WHERE "ID" = @ID
+                    WHERE "ID" = @ID
                     
                     """;
                     }
@@ -1116,7 +1116,46 @@ namespace GestioneSicurezze
                 }
                 catch (Exception ex)
                 {
-                    messageError = $"Errore durante il recupero degli autisti/targhe/ragioni sociali.\nErrore : {ex.Message}";
+                    messageError = $"Errore durante l'aggiornamento di autisti/targhe/ragioni sociali.\nErrore : {ex.Message}";
+                    return -1;
+                }
+            }
+        }
+        #endregion
+
+        #region "Metodo per cancellare un singolo autista/targa/ragione sociale"
+        public static int DeleteAutistaTarga(int ID)
+        {
+            using (IDbConnection conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlCommand;
+                    if (isProd)
+                    {
+                        sqlCommand = """
+                    
+                    DELETE FROM sicurezze."SicurAutistaTarga"
+                            WHERE "ID" = @ID;                   
+                    
+                    """;
+                    }
+                    else
+                    {
+                        sqlCommand = """
+                    
+                    DELETE FROM mezzapesa."SicurAutistaTarga"
+                            WHERE "ID" = @ID;
+                    
+                    """;
+                    }
+
+                    return conn.Execute(sqlCommand, new { ID = ID });
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Errore durante la cancellazione di autisti/targhe/ragioni sociali.\nErrore : {ex.Message}";
                     return -1;
                 }
             }
@@ -1159,6 +1198,6 @@ namespace GestioneSicurezze
                 }
             }
         }
-        #endregion
+        #endregion        
     }
 }

@@ -523,6 +523,7 @@ namespace GestioneSicurezze
         }
         private void LoadAutisti()
         {
+            int autistaSelezionato = ComboAutista.SelectedIndex;            
             ComboAutista.ItemsSource = null;
             _codiciAutisti = DbOperation.GetAutistiTargheRagioniSociali();
             if (_codiciAutisti == null || _codiciAutisti.Count == 0)
@@ -531,7 +532,9 @@ namespace GestioneSicurezze
                 return;
             }
             ComboAutista.ItemsSource = _codiciAutisti;
-            ComboAutista.SelectedIndex = -1;
+            ComboAutista.SelectedIndex = autistaSelezionato;
+            //txtRagSocTrasp.Text = string.Empty;
+            //txtTarghe.Text = string.Empty;
         }
         private void AggiornaListaOperatori(object sender, RoutedEventArgs e)
         {

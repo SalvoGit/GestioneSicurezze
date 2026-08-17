@@ -1,17 +1,7 @@
 ﻿using GestioneSicurezze.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace GestioneSicurezze.AutistiTarghe
 {
@@ -113,6 +103,62 @@ namespace GestioneSicurezze.AutistiTarghe
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void LoadListButton_Click(object sender, RoutedEventArgs e)
+        {
+            CaricaListaAutisti();
+        }
+
+        private void CaricaListaAutisti()
+        {
+            Lis_AutistiTarghe.ItemsSource = null;
+            List<AutistaTarga> autistiTarghe = DbOperation.GetAutistiTargheRagioniSociali();
+            Lis_AutistiTarghe.ItemsSource = autistiTarghe;
+        }
+        private void AggiornaAutista(object sender, RoutedEventArgs e)
+        {
+            var elemento = (sender as Button).Tag as AutistaTarga;
+            
+            AutistaTarga autistaTarga = new AutistaTarga
+            {
+                ID = elemento.ID,
+                Autista = elemento.Autista.ToUpper(),
+                Targa = elemento.Targa.ToUpper(),
+                RagioneSociale = elemento.RagioneSociale.ToUpper()
+            };
+
+            int result = DbOperation.UpadateAutistaTarga(autistaTarga);
+
+            if(result > 0)
+            {
+                MessageBox.Show("Dati aggiornati con successo!", "Success",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Errore durante l'aggiornamento dei dati: " + DbOperation.messageError, "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void DeleteAutista(object sender, RoutedEventArgs e)
+        {
+            var elemento = (sender as Button).Tag as AutistaTarga;            
+
+            int result = DbOperation.DeleteAutistaTarga(elemento.ID);
+
+            if (result > 0)
+            {
+                MessageBox.Show("Dati eliminati con successo!", "Success",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+
+                CaricaListaAutisti();
+            }
+            else
+            {
+                MessageBox.Show("Errore durante l'eliminazione dei dati: " + DbOperation.messageError, "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

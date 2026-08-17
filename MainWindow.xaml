@@ -389,7 +389,7 @@
                     <Button x:Name="SearchButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="SearchButton_Click" Margin="5">Ricerca Sicurezza</Button>
                     <Button x:Name="NuoOpButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="InsertNuovoOperatore" Margin="5">Nuovo Operatore</Button>
                     <Button x:Name="NuovoClienteButton" Style="{DynamicResource ButtonStyle}" Width="150" Click="NuovoClienteButton_Click" Margin="5">Nuovo Cliente</Button>
-                    <Button x:Name="NuovoAutistaButton" Style="{DynamicResource ButtonStyle}" Width="175" Click="NuovoAutistaButton_Click" Margin="5">Nuovo Autista/Targa</Button>
+                    <Button x:Name="NuovoAutistaButton" Style="{DynamicResource ButtonStyle}" Width="200" Click="NuovoAutistaButton_Click" Margin="5">Gestione Autista/Targa</Button>
                     <Button x:Name="SettingsButton" Click="OpenSettings" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5">Settings</Button>
                     <Button x:Name="UpdateButton" IsEnabled="False" Visibility="Collapsed" Style="{DynamicResource UpdateStyle}" Width="200" Margin="5" Click="UpdateButton_Click">Installa Aggiornamenti</Button>
                     <!--<Button x:Name="SigilliButton" Visibility="Hidden" Style="{DynamicResource ButtonStyle}" Width="150" Margin="5" Click="SigilliButton_Click">Sigilli</Button>-->

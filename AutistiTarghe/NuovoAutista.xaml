@@ -24,6 +24,8 @@
             <RowDefinition Height="5"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="400"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Border Style="{StaticResource BorderStyle}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
@@ -105,9 +107,65 @@
                         Width="150" Height="40" HorizontalAlignment="Center" Margin="10,0" Click="SaveNewCliente_Click"/>
                 <Button x:Name="ExitButton" Content="Esci" Style="{StaticResource ButtonStyle}"
                         Width="150" Height="40" HorizontalAlignment="Center" Margin="10,0" Click="ExitButton_Click"/>
+                <Button x:Name="LoadListButton" Content="Lista Autisti" Style="{StaticResource ButtonStyle}"
+                        Width="150" Height="40" HorizontalAlignment="Center" Margin="10,0" Click="LoadListButton_Click"/>
             </StackPanel>
         </Border>
 
+        <Border Style="{StaticResource BorderStyle}" Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="3">
+            <Expander IsExpanded="True">
+                <Expander.Header>
+                    <Label Content="Lista Autisti" Style="{StaticResource LabelStyle}" FontSize="20" FontWeight="Bold"/>
+                </Expander.Header>
+                <Expander.Content>
+                    <ListView x:Name="Lis_AutistiTarghe" FontSize="16">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="AUTISTA" Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Path=Autista}" Width="280" HorizontalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="TARGA" Width="110">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Path=Targa}" Width="90" HorizontalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="RAG. SOC." Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Path=RagioneSociale}" Width="280" HorizontalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="AZIONI" Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="Modifica" Padding="2,5" Background="Green" Foreground="White"
+                                                        Tag="{Binding}" HorizontalAlignment="Center"
+                                                        Click="AggiornaAutista"></Button>
+                                                <Button Content="Elimina" Padding="2,5" Margin="5,0,0,0" Background="Tomato"
+                                                        Foreground="White" Tag="{Binding}" HorizontalAlignment="Center"
+                                                        Click="DeleteAutista"></Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                            </GridView>                            
+                        </ListView.View>
+                    </ListView>
+                </Expander.Content>
+            </Expander>
+        </Border>
     </Grid>
     
 </Window>
