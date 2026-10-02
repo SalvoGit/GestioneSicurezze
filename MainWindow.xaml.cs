@@ -588,39 +588,51 @@ namespace GestioneSicurezze
             CaricaUltimi10(elemento.Operatore);
         }
         private void Delete_Click(object sender, RoutedEventArgs e)
-        {            
-            try
-            {
-                var elemento = (sender as Button).Tag as ModelloXray;
-                int righeCancellate = DbOperation.DeleteSicurezza(elemento.ID);
-                DeletePDF(elemento);
-                MessageBox.Show(righeCancellate > 0 ? "Sicurezza cancellata correttamente." : $"Errore durante la cancellazione della sicurezza.\n{DbOperation.GetErrorMessage}",
-                    "Success",MessageBoxButton.OK,MessageBoxImage.Information);
-                //ultimiInserimenti.Remove(elemento);
-                CaricaUltimi10(elemento.Operatore);
-            }
-            catch (Exception ex) { }
-            
-        }
-
-        private void DeletePDF(ModelloXray elemento)
         {
-            string nomeFile = $"{elemento.Progressivo}_{elemento.Cliente.Replace(" ", "_")}_{elemento.Awb}.pdf";
-            string filePath = Path.Combine(_userSettings.SavePath, nomeFile);
+            var elemento = (sender as Button).Tag as ModelloXray;
 
-            try
+            var result = MessageBox.Show($"Elimino la sicurezza\n AWB: {elemento.Awb}\n Cliente: {elemento.Cliente}\n\nSi vuole procedere?", "Elimina Sicurezza",
+                MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+            if (result == MessageBoxResult.Yes)
             {
-                if (File.Exists(filePath))
+                try
                 {
-                    File.Delete(filePath);
-                }                
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Errore durante la cancellazione del file PDF {nomeFile}: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+                    DeleteUtility.DeleteSicurezzaFromDatabase(elemento.ID, elemento.Awb);
+                    MessageBox.Show($"Sicurezza eliminata con successo:\n\n AWB: {elemento.Awb}\n Cliente: {elemento.Cliente}", "Elimina Sicurezza", MessageBoxButton.OK, MessageBoxImage.Information);
+                    DeleteUtility.DeletePDFSicurezza(elemento.Progressivo, elemento.Cliente, elemento.Awb, _userSettings.SavePath);
+                    MessageBox.Show($"PDF eliminato correttamente:\n\n AWB: {elemento.Awb}\n Cliente: {elemento.Cliente}", "Elimina Sicurezza", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //DeletePDF(elemento);
+                    //ultimiInserimenti.Remove(elemento);
+                    CaricaUltimi10(elemento.Operatore);
+                }
+                catch(RecordNonTrovatoException ex)
+                {
+                    MessageBox.Show($"Errore durante la cancellazione della sicurezza dal database:\n\n AWB: {elemento.Awb}\n\nErrore: {ex.Message}\n\n" +
+                        $"Nessun File PDF verrà cancellato", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Errore durante la cancellazione del file PDF della sciurezza:\n\n AWB: {elemento.Awb}\n\nErrore: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }                      
         }
+
+        //private void DeletePDF(ModelloXray elemento)
+        //{
+        //    //string nomeFile = $"{elemento.Progressivo}_{elemento.Cliente.Replace(" ", "_")}_{elemento.Awb}.pdf";
+        //    //string filePath = Path.Combine(_userSettings.SavePath, nomeFile);
+
+        //    try
+        //    {
+        //        DeleteUtility.DeletePDFSicurezza(elemento.Progressivo, elemento.Cliente, elemento.Awb, _userSettings.SavePath);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Errore durante la cancellazione del file PDF della sciurezza:\n AWB: {elemento.Awb}\nErrore: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        return;
+        //    }
+        //}
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {

@@ -173,5 +173,37 @@ namespace GestioneSicurezze
         {
             this.Close();
         }
+
+        private void EliminaButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (String.IsNullOrEmpty(txtRicercaSicurezza.Text))
+            {
+                MessageBox.Show("Ricercare la sicurezza da eliminare con un AWB valido.", "Ristampa - Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var result = MessageBox.Show($"Elimino la sicurezza\n AWB: {modelloXray.Awb}\n Cliente: {modelloXray.Cliente}\n\nSi vuole procedere?", "Elimina Sicurezza",
+                MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {                    
+                    DeleteUtility.DeleteSicurezzaFromDatabase(modelloXray.ID, modelloXray.Awb);
+                    MessageBox.Show($"Sicurezza eliminata con successo:\n\n AWB: {modelloXray.Awb}\n Cliente: {modelloXray.Cliente}", "Elimina Sicurezza", MessageBoxButton.OK, MessageBoxImage.Information);
+                    DeleteUtility.DeletePDFSicurezza(modelloXray.Progressivo, modelloXray.Cliente, modelloXray.Awb, _userSettings.SavePath);
+                    MessageBox.Show($"PDF eliminato correttamente:\n AWB: {modelloXray.Awb}\n Cliente: {modelloXray.Cliente}", "Elimina Sicurezza", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (RecordNonTrovatoException ex)
+                {
+                    MessageBox.Show($"Errore durante la cancellazione della sicurezza dal database:\n\n AWB: {modelloXray.Awb}\n\nErrore: {ex.Message}\n\n" +
+                        $"Nessun File PDF verrà cancellato", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Errore durante la cancellazione del file PDF della sciurezza:\n\n AWB: {modelloXray.Awb}\n\nErrore: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
     }
 }

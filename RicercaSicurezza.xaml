@@ -277,6 +277,7 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button x:Name="RistampaButton" Style="{DynamicResource ButtonStyle}" Width="200" Margin="5" Click="RistampaButton_Click">Ristampa</Button>
                 <Button x:Name="ModificaButton" Style="{DynamicResource ButtonStyle}" Width="200" Margin="5" Click="ModificaButton_Click">Modifica Sicurezza</Button>
+                <Button x:Name="EliminaButton" Style="{DynamicResource ButtonStyle}" Width="200" Margin="5" Click="EliminaButton_Click">Elimina Sicurezza</Button>
                 <Button x:Name="CloseButton" Style="{DynamicResource ButtonStyle}" Width="200" Margin="5" Click="CloseButton_Click" >Chiudi</Button>
             </StackPanel>
         </Border>

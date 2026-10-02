@@ -707,7 +707,7 @@ namespace GestioneSicurezze
         #endregion
 
         #region "Metodo per cancellare una sicurezza dal database"
-        public static int DeleteSicurezza(int ID)
+        public static int DeleteSicurezza(int ID, string sicurezza)
         {
             using (IDbConnection conn = CreateConnection())
             {
@@ -717,15 +717,15 @@ namespace GestioneSicurezze
                     string sqlCommand;
                     if (isProd)
                     {
-                        sqlCommand = "DELETE FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID";
+                        sqlCommand = "DELETE FROM sicurezze.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID AND \"AWB\" = @sicurezza";
                     }
                     else
                     {
-                        sqlCommand = "DELETE FROM mezzapesa.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID";
+                        sqlCommand = "DELETE FROM mezzapesa.\"SicurRegistroSicurezze\" WHERE \"ID\" = @ID AND \"AWB\" = @sicurezza";
                     }
 
 
-                    int righeCancellate = conn.Execute(sqlCommand, new { ID });
+                    int righeCancellate = conn.Execute(sqlCommand, new { ID, sicurezza });
                     return righeCancellate;
                 }
                 catch (Exception ex)
